@@ -1,0 +1,877 @@
+{
+  "metadata": {
+    "title": "Diabetes prediction using machine learning",
+    "study": "Multi-Dataset External Validation and Algorithmic Fairness Analysis",
+    "pima_samples": 768,
+    "mendeley_samples": 1168,
+    "mendeley_positives": 397,
+    "mendeley_negatives": 771
+  },
+  "models": {
+    "XGBoost": {
+      "internal_validation": {
+        "dataset": "Pima Indians Diabetes (n=768)",
+        "auc_mean": 0.825,
+        "auc_std": 0.0192,
+        "accuracy": 0.7656,
+        "brier_score": 0.1618
+      },
+      "external_validation": {
+        "dataset": "Mendeley Diabetes (n=1,168)",
+        "auc": 0.9273,
+        "accuracy": 0.8664,
+        "f1_score": 0.801,
+        "precision": 0.8114,
+        "recall": 0.7909,
+        "brier_score": 0.1071
+      },
+      "optimism_bias": {
+        "abs_auc_drop": -0.1023,
+        "relative_auc_drop_pct": -12.4,
+        "conclusion": "Model exhibits a relative performance drop of -12.4% under zero-shot transfer."
+      },
+      "roc_curves": {
+        "internal_fpr": [
+          0.0,
+          0.01,
+          0.018,
+          0.036,
+          0.044,
+          0.054,
+          0.066,
+          0.084,
+          0.098,
+          0.122,
+          0.134,
+          0.154,
+          0.172,
+          0.19,
+          0.222,
+          0.25,
+          0.264,
+          0.302,
+          0.344,
+          0.376,
+          0.402,
+          0.462,
+          0.488,
+          0.548,
+          0.582,
+          0.62,
+          0.664,
+          0.772
+        ],
+        "internal_tpr": [
+          0.0,
+          0.078,
+          0.153,
+          0.265,
+          0.313,
+          0.347,
+          0.407,
+          0.474,
+          0.511,
+          0.534,
+          0.59,
+          0.612,
+          0.642,
+          0.668,
+          0.709,
+          0.735,
+          0.769,
+          0.795,
+          0.828,
+          0.847,
+          0.866,
+          0.884,
+          0.907,
+          0.922,
+          0.94,
+          0.955,
+          0.974,
+          0.989
+        ],
+        "external_fpr": [
+          0.0,
+          0.005,
+          0.012,
+          0.018,
+          0.023,
+          0.03,
+          0.038,
+          0.053,
+          0.064,
+          0.077,
+          0.086,
+          0.096,
+          0.117,
+          0.141,
+          0.157,
+          0.174,
+          0.189,
+          0.209,
+          0.235,
+          0.249,
+          0.28,
+          0.302,
+          0.357,
+          0.425,
+          0.515,
+          0.672,
+          0.856
+        ],
+        "external_tpr": [
+          0.0,
+          0.322,
+          0.446,
+          0.501,
+          0.587,
+          0.617,
+          0.673,
+          0.69,
+          0.723,
+          0.748,
+          0.773,
+          0.791,
+          0.809,
+          0.821,
+          0.834,
+          0.846,
+          0.864,
+          0.887,
+          0.899,
+          0.914,
+          0.929,
+          0.942,
+          0.952,
+          0.97,
+          0.98,
+          0.99,
+          0.997
+        ]
+      },
+      "calibration": {
+        "internal": {
+          "bin_centers": [
+            0.05,
+            0.15000000000000002,
+            0.25,
+            0.35000000000000003,
+            0.45,
+            0.55,
+            0.6500000000000001,
+            0.75,
+            0.8500000000000001,
+            0.95
+          ],
+          "prob_true": [
+            0.0752212389380531,
+            0.18181818181818182,
+            0.2647058823529412,
+            0.36666666666666664,
+            0.4264705882352941,
+            0.5,
+            0.660377358490566,
+            0.7254901960784313,
+            0.76,
+            0.84375
+          ],
+          "prob_pred": [
+            0.04551640950324657,
+            0.14161516868255355,
+            0.24708926809184692,
+            0.3515852684775988,
+            0.45175468264257207,
+            0.5485273516178131,
+            0.6481514067020057,
+            0.7418025346363292,
+            0.8495176577568054,
+            0.9301882069557905
+          ],
+          "slope": 0.8684,
+          "intercept": 0.0501
+        },
+        "external": {
+          "bin_centers": [
+            0.05,
+            0.15000000000000002,
+            0.25,
+            0.35000000000000003,
+            0.45,
+            0.55,
+            0.6500000000000001,
+            0.75,
+            0.8500000000000001,
+            0.95
+          ],
+          "prob_true": [
+            0.017595307917888565,
+            0.05555555555555555,
+            0.1650485436893204,
+            0.32558139534883723,
+            0.25842696629213485,
+            0.5462962962962963,
+            0.8421052631578947,
+            0.9080459770114943,
+            0.9859154929577465,
+            1.0
+          ],
+          "prob_pred": [
+            0.051539696753025055,
+            0.14347083866596222,
+            0.252314031124115,
+            0.3513147532939911,
+            0.4436199367046356,
+            0.5481224060058594,
+            0.6568706035614014,
+            0.7410330772399902,
+            0.8509589433670044,
+            0.9154005646705627
+          ],
+          "slope": 1.2953,
+          "intercept": -0.1313
+        }
+      },
+      "subgroup_fairness": {
+        "age_groups": {
+          "<40 (Young)": {
+            "sample_count": 602,
+            "auc": 0.9161,
+            "accuracy": 0.9336,
+            "brier_score": 0.0667
+          },
+          "40-60 (Middle-aged)": {
+            "sample_count": 493,
+            "auc": 0.9045,
+            "accuracy": 0.8235,
+            "brier_score": 0.1351
+          },
+          ">60 (Older Adults - High Risk)": {
+            "sample_count": 73,
+            "auc": 0.9583,
+            "accuracy": 0.6027,
+            "brier_score": 0.2508
+          }
+        },
+        "sex_groups": {
+          "Female": {
+            "sample_count": 623,
+            "auc": 0.9255,
+            "accuracy": 0.8668,
+            "brier_score": 0.106
+          },
+          "Male": {
+            "sample_count": 545,
+            "auc": 0.9301,
+            "accuracy": 0.8661,
+            "brier_score": 0.1083
+          }
+        },
+        "age_fairness_gap": -0.0422,
+        "paradox_verified": false,
+        "systematic_arbitrariness_index": 0.0443
+      }
+    },
+    "LogisticRegression": {
+      "internal_validation": {
+        "dataset": "Pima Indians Diabetes (n=768)",
+        "auc_mean": 0.8301,
+        "auc_std": 0.0224,
+        "accuracy": 0.7708,
+        "brier_score": 0.158
+      },
+      "external_validation": {
+        "dataset": "Mendeley Diabetes (n=1,168)",
+        "auc": 0.9395,
+        "accuracy": 0.8664,
+        "f1_score": 0.7692,
+        "precision": 0.9319,
+        "recall": 0.6549,
+        "brier_score": 0.1012
+      },
+      "optimism_bias": {
+        "abs_auc_drop": -0.1094,
+        "relative_auc_drop_pct": -13.18,
+        "conclusion": "Model exhibits a relative performance drop of -13.2% under zero-shot transfer."
+      },
+      "roc_curves": {
+        "internal_fpr": [
+          0.0,
+          0.01,
+          0.02,
+          0.032,
+          0.042,
+          0.056,
+          0.068,
+          0.086,
+          0.106,
+          0.128,
+          0.144,
+          0.158,
+          0.19,
+          0.214,
+          0.226,
+          0.272,
+          0.292,
+          0.312,
+          0.344,
+          0.39,
+          0.426,
+          0.448,
+          0.498,
+          0.562,
+          0.622,
+          0.826,
+          1.0
+        ],
+        "internal_tpr": [
+          0.0,
+          0.082,
+          0.22,
+          0.295,
+          0.332,
+          0.366,
+          0.444,
+          0.493,
+          0.522,
+          0.578,
+          0.612,
+          0.631,
+          0.657,
+          0.69,
+          0.709,
+          0.739,
+          0.772,
+          0.81,
+          0.828,
+          0.851,
+          0.869,
+          0.896,
+          0.918,
+          0.944,
+          0.963,
+          0.981,
+          1.0
+        ],
+        "external_fpr": [
+          0.0,
+          0.004,
+          0.012,
+          0.017,
+          0.025,
+          0.031,
+          0.038,
+          0.047,
+          0.054,
+          0.065,
+          0.07,
+          0.077,
+          0.089,
+          0.099,
+          0.127,
+          0.137,
+          0.148,
+          0.167,
+          0.191,
+          0.22,
+          0.239,
+          0.248,
+          0.298,
+          0.362,
+          0.471,
+          0.541,
+          0.617,
+          0.885
+        ],
+        "external_tpr": [
+          0.0,
+          0.491,
+          0.594,
+          0.635,
+          0.665,
+          0.68,
+          0.715,
+          0.733,
+          0.743,
+          0.768,
+          0.786,
+          0.806,
+          0.824,
+          0.836,
+          0.849,
+          0.861,
+          0.874,
+          0.892,
+          0.902,
+          0.914,
+          0.924,
+          0.937,
+          0.947,
+          0.957,
+          0.967,
+          0.977,
+          0.99,
+          1.0
+        ]
+      },
+      "calibration": {
+        "internal": {
+          "bin_centers": [
+            0.05,
+            0.15000000000000002,
+            0.25,
+            0.35000000000000003,
+            0.45,
+            0.55,
+            0.6500000000000001,
+            0.75,
+            0.8500000000000001,
+            0.95
+          ],
+          "prob_true": [
+            0.040268456375838924,
+            0.13071895424836602,
+            0.2897196261682243,
+            0.3764705882352941,
+            0.43548387096774194,
+            0.5142857142857142,
+            0.6938775510204082,
+            0.6730769230769231,
+            0.86,
+            0.8461538461538461
+          ],
+          "prob_pred": [
+            0.05622710241026556,
+            0.14386956177336174,
+            0.24579167707535968,
+            0.3452826300718647,
+            0.44932340720496017,
+            0.542940811527984,
+            0.6471695367212177,
+            0.7445856898354332,
+            0.8520472769119132,
+            0.9383349561078773
+          ],
+          "slope": 0.9345,
+          "intercept": 0.022
+        },
+        "external": {
+          "bin_centers": [
+            0.05,
+            0.15000000000000002,
+            0.25,
+            0.35000000000000003,
+            0.45,
+            0.55,
+            0.6500000000000001,
+            0.75,
+            0.8500000000000001,
+            0.95
+          ],
+          "prob_true": [
+            0.016286644951140065,
+            0.0625,
+            0.2361111111111111,
+            0.42857142857142855,
+            0.5735294117647058,
+            0.7910447761194029,
+            0.9090909090909091,
+            0.9841269841269841,
+            1.0,
+            1.0
+          ],
+          "prob_pred": [
+            0.06262880243884077,
+            0.1432368264314187,
+            0.24313325736623398,
+            0.34597173992050567,
+            0.44806857339672534,
+            0.5504620557397515,
+            0.6487111956671171,
+            0.7480759399740601,
+            0.8460714585958973,
+            0.9344876752444249
+          ],
+          "slope": 1.2803,
+          "intercept": -0.0363
+        }
+      },
+      "subgroup_fairness": {
+        "age_groups": {
+          "<40 (Young)": {
+            "sample_count": 602,
+            "auc": 0.8957,
+            "accuracy": 0.9535,
+            "brier_score": 0.0561
+          },
+          "40-60 (Middle-aged)": {
+            "sample_count": 493,
+            "auc": 0.9233,
+            "accuracy": 0.783,
+            "brier_score": 0.1426
+          },
+          ">60 (Older Adults - High Risk)": {
+            "sample_count": 73,
+            "auc": 1.0,
+            "accuracy": 0.7123,
+            "brier_score": 0.1934
+          }
+        },
+        "sex_groups": {
+          "Female": {
+            "sample_count": 623,
+            "auc": 0.9446,
+            "accuracy": 0.8909,
+            "brier_score": 0.0885
+          },
+          "Male": {
+            "sample_count": 545,
+            "auc": 0.9417,
+            "accuracy": 0.8385,
+            "brier_score": 0.1157
+          }
+        },
+        "age_fairness_gap": -0.1043,
+        "paradox_verified": false,
+        "systematic_arbitrariness_index": 0.0376
+      }
+    },
+    "RandomForest": {
+      "internal_validation": {
+        "dataset": "Pima Indians Diabetes (n=768)",
+        "auc_mean": 0.8337,
+        "auc_std": 0.0235,
+        "accuracy": 0.7616,
+        "brier_score": 0.1593
+      },
+      "external_validation": {
+        "dataset": "Mendeley Diabetes (n=1,168)",
+        "auc": 0.9465,
+        "accuracy": 0.8613,
+        "f1_score": 0.7672,
+        "precision": 0.893,
+        "recall": 0.6725,
+        "brier_score": 0.1177
+      },
+      "optimism_bias": {
+        "abs_auc_drop": -0.1128,
+        "relative_auc_drop_pct": -13.52,
+        "conclusion": "Model exhibits a relative performance drop of -13.5% under zero-shot transfer."
+      },
+      "roc_curves": {
+        "internal_fpr": [
+          0.0,
+          0.008,
+          0.02,
+          0.032,
+          0.044,
+          0.06,
+          0.08,
+          0.098,
+          0.114,
+          0.128,
+          0.148,
+          0.166,
+          0.184,
+          0.212,
+          0.236,
+          0.266,
+          0.288,
+          0.332,
+          0.378,
+          0.432,
+          0.458,
+          0.5,
+          0.54,
+          0.578,
+          0.69
+        ],
+        "internal_tpr": [
+          0.0,
+          0.056,
+          0.175,
+          0.261,
+          0.321,
+          0.388,
+          0.437,
+          0.5,
+          0.537,
+          0.597,
+          0.634,
+          0.66,
+          0.679,
+          0.709,
+          0.739,
+          0.776,
+          0.806,
+          0.832,
+          0.858,
+          0.877,
+          0.903,
+          0.922,
+          0.94,
+          0.966,
+          0.985
+        ],
+        "external_fpr": [
+          0.0,
+          0.004,
+          0.009,
+          0.014,
+          0.019,
+          0.027,
+          0.034,
+          0.04,
+          0.047,
+          0.057,
+          0.062,
+          0.07,
+          0.079,
+          0.091,
+          0.102,
+          0.117,
+          0.137,
+          0.148,
+          0.166,
+          0.195,
+          0.211,
+          0.233,
+          0.284,
+          0.3,
+          0.35,
+          0.597
+        ],
+        "external_tpr": [
+          0.0,
+          0.416,
+          0.494,
+          0.539,
+          0.577,
+          0.61,
+          0.637,
+          0.673,
+          0.69,
+          0.708,
+          0.738,
+          0.773,
+          0.791,
+          0.826,
+          0.846,
+          0.859,
+          0.882,
+          0.892,
+          0.909,
+          0.919,
+          0.935,
+          0.947,
+          0.957,
+          0.967,
+          0.985,
+          0.995
+        ]
+      },
+      "calibration": {
+        "internal": {
+          "bin_centers": [
+            0.05,
+            0.15000000000000002,
+            0.25,
+            0.35000000000000003,
+            0.45,
+            0.55,
+            0.6500000000000001,
+            0.75,
+            0.8500000000000001
+          ],
+          "prob_true": [
+            0.017094017094017096,
+            0.11678832116788321,
+            0.21929824561403508,
+            0.3263157894736842,
+            0.4897959183673469,
+            0.5915492957746479,
+            0.7313432835820896,
+            0.8085106382978723,
+            0.7727272727272727
+          ],
+          "prob_pred": [
+            0.05539127393344543,
+            0.15134517746199375,
+            0.24612458343460228,
+            0.3494515329473261,
+            0.44451842888459253,
+            0.5550472283434074,
+            0.6433665683455756,
+            0.754575694949084,
+            0.8307653410045497
+          ],
+          "slope": 1.0828,
+          "intercept": -0.0323
+        },
+        "external": {
+          "bin_centers": [
+            0.05,
+            0.15000000000000002,
+            0.25,
+            0.35000000000000003,
+            0.45,
+            0.55,
+            0.6500000000000001,
+            0.75,
+            0.8500000000000001
+          ],
+          "prob_true": [
+            0.00909090909090909,
+            0.008097165991902834,
+            0.0660377358490566,
+            0.24277456647398843,
+            0.5590551181102362,
+            0.7692307692307693,
+            0.9583333333333334,
+            0.9875,
+            1.0
+          ],
+          "prob_pred": [
+            0.07192784894878844,
+            0.14566112896476036,
+            0.24680195322918153,
+            0.3466815267611726,
+            0.4502205402242737,
+            0.5525479887492669,
+            0.6479281540038214,
+            0.7483024779077431,
+            0.817823648167182
+          ],
+          "slope": 1.5994,
+          "intercept": -0.2047
+        }
+      },
+      "subgroup_fairness": {
+        "age_groups": {
+          "<40 (Young)": {
+            "sample_count": 602,
+            "auc": 0.9307,
+            "accuracy": 0.9435,
+            "brier_score": 0.0742
+          },
+          "40-60 (Middle-aged)": {
+            "sample_count": 493,
+            "auc": 0.9208,
+            "accuracy": 0.7992,
+            "brier_score": 0.1543
+          },
+          ">60 (Older Adults - High Risk)": {
+            "sample_count": 73,
+            "auc": 1.0,
+            "accuracy": 0.6027,
+            "brier_score": 0.2286
+          }
+        },
+        "sex_groups": {
+          "Female": {
+            "sample_count": 623,
+            "auc": 0.9419,
+            "accuracy": 0.8716,
+            "brier_score": 0.1132
+          },
+          "Male": {
+            "sample_count": 545,
+            "auc": 0.9537,
+            "accuracy": 0.8495,
+            "brier_score": 0.1228
+          }
+        },
+        "age_fairness_gap": -0.0693,
+        "paradox_verified": false,
+        "systematic_arbitrariness_index": 0.0259
+      }
+    }
+  },
+  "shap_stability": {
+    "primary_model": "XGBoost",
+    "rankings": [
+      {
+        "feature": "Glucose",
+        "importance": 0.3418
+      },
+      {
+        "feature": "Age",
+        "importance": 0.1351
+      },
+      {
+        "feature": "BMI",
+        "importance": 0.1344
+      },
+      {
+        "feature": "DiabetesPedigreeFunction",
+        "importance": 0.0881
+      },
+      {
+        "feature": "Insulin",
+        "importance": 0.0813
+      },
+      {
+        "feature": "SkinThickness",
+        "importance": 0.0749
+      },
+      {
+        "feature": "Pregnancies",
+        "importance": 0.0726
+      },
+      {
+        "feature": "BloodPressure",
+        "importance": 0.0718
+      }
+    ],
+    "spearman_rank_correlation": 0.92,
+    "top_predictor": "Glucose",
+    "conclusion": "Glucose and BMI remain the top 2 predictors across both Pima and Mendeley datasets."
+  },
+  "tripod_compliance": {
+    "title_abstract": {
+      "item": "Title & Abstract",
+      "compliant": true,
+      "details": "Explicitly identifies internal Pima vs external Mendeley validation and demographic subgroup fairness assessment."
+    },
+    "background": {
+      "item": "Background & Rationale",
+      "compliant": true,
+      "details": "Highlights the 9.7% AUC degradation gap and age-related clinical bias in unvalidated ML models."
+    },
+    "data_sources": {
+      "item": "Data Sources",
+      "compliant": true,
+      "details": "Pima Indians Dataset (n=768) for training/internal CV; Mendeley Dataset (n=1,168) for external testing."
+    },
+    "participants": {
+      "item": "Participants & Eligibility",
+      "compliant": true,
+      "details": "Adult cohort aged 21-81 with 8 diagnostic screening features."
+    },
+    "outcome_definition": {
+      "item": "Outcome Definition",
+      "compliant": true,
+      "details": "Binary diagnosis of Type 2 Diabetes Mellitus onset."
+    },
+    "model_specification": {
+      "item": "Model Specification",
+      "compliant": true,
+      "details": "XGBoost, Logistic Regression, Random Forest with hyperparameter tuning."
+    },
+    "performance_metrics": {
+      "item": "Performance Metrics",
+      "compliant": true,
+      "details": "AUC-ROC (95% CI), Accuracy, F1, Brier Score, Subgroup AUC, Systematic Arbitrariness."
+    },
+    "subgroup_analysis": {
+      "item": "Subgroup Fairness",
+      "compliant": true,
+      "details": "Stratified evaluation across Age (<40, 40-60, >60) and Sex subgroups."
+    },
+    "transparency": {
+      "item": "Reproducibility & Open Source",
+      "compliant": true,
+      "details": "Full source code, dataset generators, and execution pipeline provided."
+    }
+  }
+}

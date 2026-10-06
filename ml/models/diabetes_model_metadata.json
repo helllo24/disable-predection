@@ -1,0 +1,94 @@
+{
+  "selected_model": "XGBoost",
+  "selected_model_file": "ml/models/diabetes_model.pkl",
+  "training_timestamp": "2026-08-08T14:47:27.127817",
+  "dataset": {
+    "name": "Pima Indians Diabetes Dataset",
+    "total_samples": 768,
+    "features": [
+      "Pregnancies",
+      "Glucose",
+      "BloodPressure",
+      "SkinThickness",
+      "Insulin",
+      "BMI",
+      "DiabetesPedigreeFunction",
+      "Age"
+    ],
+    "target": "Outcome (0=No Diabetes, 1=Diabetes)"
+  },
+  "all_model_evaluations": {
+    "Logistic Regression": {
+      "accuracy": 0.7077922077922078,
+      "precision": 0.6,
+      "recall": 0.5,
+      "f1": 0.5454545454545454,
+      "roc_auc": 0.812962962962963,
+      "confusion_matrix": [
+        [
+          82,
+          18
+        ],
+        [
+          27,
+          27
+        ]
+      ]
+    },
+    "Random Forest": {
+      "accuracy": 0.7402597402597403,
+      "precision": 0.6666666666666666,
+      "recall": 0.5185185185185185,
+      "f1": 0.5833333333333334,
+      "roc_auc": 0.8144444444444444,
+      "confusion_matrix": [
+        [
+          86,
+          14
+        ],
+        [
+          26,
+          28
+        ]
+      ]
+    },
+    "XGBoost": {
+      "accuracy": 0.7597402597402597,
+      "precision": 0.6888888888888889,
+      "recall": 0.5740740740740741,
+      "f1": 0.6262626262626263,
+      "roc_auc": 0.8283333333333334,
+      "confusion_matrix": [
+        [
+          86,
+          14
+        ],
+        [
+          23,
+          31
+        ]
+      ]
+    }
+  },
+  "feature_importances": {
+    "Pregnancies": 0.07853987067937851,
+    "Glucose": 0.3683057129383087,
+    "BloodPressure": 0.05299130082130432,
+    "SkinThickness": 0.05547872185707092,
+    "Insulin": 0.08143102377653122,
+    "BMI": 0.15948110818862915,
+    "DiabetesPedigreeFunction": 0.08363044261932373,
+    "Age": 0.12014182657003403
+  },
+  "preprocessing_info": {
+    "imputation": "SimpleImputer (median)",
+    "scaling": "StandardScaler",
+    "handled_zero_features": [
+      "Glucose",
+      "BloodPressure",
+      "SkinThickness",
+      "Insulin",
+      "BMI"
+    ]
+  }
+}

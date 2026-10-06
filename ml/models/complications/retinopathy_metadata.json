@@ -1,0 +1,18 @@
+{
+  "complication": "retinopathy",
+  "target_column": "retinopathy_risk",
+  "feature_columns": [
+    "quality_assessment",
+    "prescreen_result",
+    "microaneurysm_count_lvl1",
+    "microaneurysm_count_lvl2",
+    "microaneurysm_count_lvl3",
+    "exudate_count_lvl1",
+    "exudate_count_lvl2",
+    "macula_center_distance",
+    "optic_disc_diameter"
+  ],
+  "accuracy": 0.8095,
+  "f1_score": 0.8115,
+  "model_type": "XGBoost"
+}

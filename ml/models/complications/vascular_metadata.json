@@ -1,0 +1,18 @@
+{
+  "complication": "vascular",
+  "target_column": "vascular_disease_risk",
+  "feature_columns": [
+    "age",
+    "ankle_brachial_index",
+    "systolic_bp",
+    "diastolic_bp",
+    "fasting_glucose",
+    "total_cholesterol",
+    "triglycerides",
+    "smoking_pack_years",
+    "intermittent_claudication"
+  ],
+  "accuracy": 0.8278,
+  "f1_score": 0.8274,
+  "model_type": "RandomForest"
+}

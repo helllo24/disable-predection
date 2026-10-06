@@ -1,0 +1,18 @@
+{
+  "complication": "foot",
+  "target_column": "foot_ulcer_risk_category",
+  "feature_columns": [
+    "age",
+    "diabetes_duration_years",
+    "hba1c",
+    "loss_of_sensory_perception",
+    "peripheral_arterial_disease",
+    "foot_deformity",
+    "history_of_ulcer",
+    "callus_present",
+    "dry_cracked_skin"
+  ],
+  "accuracy": 0.8233,
+  "f1_score": 0.8187,
+  "model_type": "RandomForest"
+}

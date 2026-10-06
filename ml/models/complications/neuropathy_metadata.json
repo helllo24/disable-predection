@@ -1,0 +1,19 @@
+{
+  "complication": "neuropathy",
+  "target_column": "neuropathy_risk",
+  "feature_columns": [
+    "age",
+    "diabetes_duration_years",
+    "hba1c",
+    "fasting_glucose",
+    "systolic_bp",
+    "bmi",
+    "tingling_feet",
+    "burning_pain",
+    "vibration_loss",
+    "ankle_reflex"
+  ],
+  "accuracy": 0.69,
+  "f1_score": 0.6887,
+  "model_type": "RandomForest"
+}

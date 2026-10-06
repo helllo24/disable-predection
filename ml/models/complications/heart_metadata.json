@@ -1,0 +1,20 @@
+{
+  "complication": "heart",
+  "target_column": "cardio_risk",
+  "feature_columns": [
+    "age",
+    "gender",
+    "bmi",
+    "systolic_bp",
+    "diastolic_bp",
+    "cholesterol",
+    "glucose",
+    "smoking",
+    "alcohol",
+    "physical_activity",
+    "diabetes_duration_years"
+  ],
+  "accuracy": 0.83,
+  "f1_score": 0.83,
+  "model_type": "XGBoost"
+}

@@ -1,0 +1,21 @@
+{
+  "complication": "kidney",
+  "target_column": "kidney_disease_risk",
+  "feature_columns": [
+    "age",
+    "blood_pressure",
+    "specific_gravity",
+    "albumin",
+    "sugar",
+    "serum_creatinine",
+    "sodium",
+    "hemoglobin",
+    "hypertension",
+    "diabetes_mellitus",
+    "pedal_edema",
+    "anemia"
+  ],
+  "accuracy": 0.8792,
+  "f1_score": 0.8807,
+  "model_type": "XGBoost"
+}

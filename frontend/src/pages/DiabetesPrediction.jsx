@@ -121,10 +121,10 @@ const DiabetesPrediction = () => {
 
       const res = await predictDiabetes(payload);
       setResult(res);
-      await fetchHistory(); // Refresh history table
+      setLoading(false);
+      fetchHistory().catch(err => console.error('Background history update error:', err));
     } catch (err) {
       setError(err.message || 'Failed to generate diabetes prediction.');
-    } finally {
       setLoading(false);
     }
   };

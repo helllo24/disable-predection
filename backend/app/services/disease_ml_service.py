@@ -51,15 +51,19 @@ class DiseaseMLService:
         if self._model is None:
             self.load_model()
 
-        # Sanitize selected symptoms
-        clean_selected = set(s.strip().lower() for s in selected_symptoms if s.strip())
+        # Sanitize selected symptoms: convert spaces/hyphens to underscores and lowercase
+        clean_selected = set(
+            s.strip().lower().replace(" ", "_").replace("-", "_")
+            for s in selected_symptoms if s.strip()
+        )
 
-        # Construct binary feature vector matching the 132 features
-        feature_dict = {}
+        # Construct binary feature vector matching the 132 features instantly
+        binary_vector = []
         for feature in self._symptoms_list:
-            feature_dict[feature] = [1 if feature.lower() in clean_selected else 0]
+            feat_norm = feature.strip().lower().replace(" ", "_").replace("-", "_")
+            binary_vector.append(1 if feat_norm in clean_selected else 0)
 
-        X_df = pd.DataFrame(feature_dict)[self._symptoms_list]
+        X_df = pd.DataFrame([binary_vector], columns=self._symptoms_list)
 
         # Model Inference
         pred_class_idx = int(self._model.predict(X_df)[0])

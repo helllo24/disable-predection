@@ -22,6 +22,7 @@ import {
   ToggleRight,
   TrendingUp
 } from 'lucide-react';
+import PageGuideModal from '../components/PageGuideModal';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('patients'); // 'patients', 'predictions', 'appointments'
@@ -100,6 +101,21 @@ const AdminDashboard = () => {
               </h1>
             </div>
           </div>
+
+          <PageGuideModal
+            title="Administrator Control & Analytics Center"
+            purpose="Provides system administrators with aggregate usage metrics, patient management, role-based access controls (RBAC), and diagnostic activity monitoring."
+            howItWorks={[
+              "Restricted to users with ADMIN role via JWT authentication middleware.",
+              "Aggregates platform statistics: total registered patients, total diabetes predictions run, disease assessments, and doctor appointments.",
+              "Allows toggling patient account status (Active/Suspended) and managing user permissions."
+            ]}
+            howToUse={[
+              "Monitor real-time system metrics in the top statistics cards.",
+              "Browse registered patient list and search by name or email.",
+              "Toggle patient account status or perform administrative management actions."
+            ]}
+          />
         </div>
       </div>
 

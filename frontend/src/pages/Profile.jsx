@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { User, Phone, Calendar, Heart, Shield, Save, CheckCircle2, AlertCircle } from 'lucide-react';
+import PageGuideModal from '../components/PageGuideModal';
 
 const Profile = () => {
   const { user, updateProfile } = useAuth();
@@ -86,29 +87,45 @@ const Profile = () => {
   return (
     <div style={{ maxWidth: 850, margin: '0 auto' }}>
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: '50%',
-              backgroundColor: 'rgba(20, 184, 166, 0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--primary-500)',
-            }}
-          >
-            <User size={32} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: '50%',
+                backgroundColor: 'rgba(20, 184, 166, 0.15)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--primary-500)',
+              }}
+            >
+              <User size={32} />
+            </div>
+            <div>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)' }}>
+                Patient Profile Settings
+              </h1>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                Manage your personal information, contact details, and medical metrics
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)' }}>
-              Patient Profile Settings
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              Manage your personal information, contact details, and medical metrics
-            </p>
-          </div>
+
+          <PageGuideModal
+            title="Patient Profile & Health Details"
+            purpose="Manages patient demographics, contact details, emergency contact info, and height/weight health baseline used across AI diagnostic modules."
+            howItWorks={[
+              "Stores user demographic data (Age, Gender, Height, Weight, Blood Group, Phone, Emergency Contact) in database.",
+              "Profile height and weight auto-populate BMI and Diabetes risk prediction forms across the platform."
+            ]}
+            howToUse={[
+              "Update your age, height, weight, and blood group.",
+              "Fill in contact and emergency information.",
+              "Click 'Save Changes' to update your medical baseline profile."
+            ]}
+          />
         </div>
       </div>
 

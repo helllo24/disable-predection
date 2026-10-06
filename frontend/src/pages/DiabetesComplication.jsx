@@ -18,8 +18,6 @@ import {
   getLatestDiabetesComplicationPrediction,
   getDiabetesComplicationsHistory
 } from '../services/api';
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
 import PageGuideModal from '../components/PageGuideModal';
 
 const DiabetesComplication = () => {
@@ -109,13 +107,14 @@ const DiabetesComplication = () => {
       const result = await predictDiabetesComplications(formData);
       setLatestResult(result);
       setSuccessMsg('Multi-organ diabetes complication risk assessment generated successfully!');
+      setLoading(false);
       
-      // Refresh history
-      const updatedHistory = await getDiabetesComplicationsHistory();
-      setHistory(updatedHistory);
+      // Refresh history in background
+      getDiabetesComplicationsHistory()
+        .then((updatedHistory) => setHistory(updatedHistory || []))
+        .catch((err) => console.error('Background history update error:', err));
     } catch (err) {
       setError(err.message || 'Failed to calculate complication risks. Please check inputs.');
-    } finally {
       setLoading(false);
     }
   };
@@ -160,12 +159,8 @@ const DiabetesComplication = () => {
   };
 
   return (
-    <div className="app-container">
-      <Sidebar />
-      <div className="main-wrapper">
-        <Navbar />
-        <main className="content-area">
-          <div className="page-header" style={{ marginBottom: '1.5rem' }}>
+    <div style={{ maxWidth: 1050, margin: '0 auto' }}>
+      <div className="page-header" style={{ marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{
@@ -546,8 +541,6 @@ const DiabetesComplication = () => {
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>No past complication assessments recorded.</p>
             )}
           </div>
-        </main>
-      </div>
     </div>
   );
 };

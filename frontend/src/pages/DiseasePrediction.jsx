@@ -100,11 +100,12 @@ const DiseasePrediction = () => {
     try {
       const res = await predictDisease({ symptoms: selectedSymptoms });
       setResult(res);
-      const updatedHistory = await getDiseaseHistory();
-      setHistory(updatedHistory || []);
+      setLoading(false); // Unblock UI & reset button state instantly!
+      getDiseaseHistory().then((updatedHistory) => {
+        setHistory(updatedHistory || []);
+      }).catch(err => console.error('Background history update error:', err));
     } catch (err) {
       setError(err.message || 'Failed to predict disease. Please try again.');
-    } finally {
       setLoading(false);
     }
   };

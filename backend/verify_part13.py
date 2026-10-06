@@ -3,6 +3,9 @@ import json
 import urllib.request
 import time
 import sys
+import datetime
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 BASE_URL = "http://127.0.0.1:8000"
 
@@ -142,8 +145,9 @@ def run_integration_tests():
 
     # 9. Part 10 — Doctor Appointment
     print("\n[9/12] Testing Part 10 — Doctor Appointment...")
+    future_date = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
     appt_payload = {
-        "doctor_id": 1, "appointment_date": "2026-08-25",
+        "doctor_id": 1, "appointment_date": future_date,
         "appointment_time": "10:00 AM", "reason": "General Checkup"
     }
     status, _, appt_res = make_request(f"{BASE_URL}/api/appointments", method="POST", data=appt_payload, headers=headers_a)

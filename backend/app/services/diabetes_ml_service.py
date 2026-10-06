@@ -50,19 +50,18 @@ class DiabetesMLService:
             'Age'
         ]
 
-        # Prepare DataFrame with exact feature order
-        input_dict = {
-            'Pregnancies': [float(feature_data['pregnancies'])],
-            'Glucose': [float(feature_data['glucose'])],
-            'BloodPressure': [float(feature_data['blood_pressure'])],
-            'SkinThickness': [float(feature_data['skin_thickness'])],
-            'Insulin': [float(feature_data['insulin'])],
-            'BMI': [float(feature_data['bmi'])],
-            'DiabetesPedigreeFunction': [float(feature_data['diabetes_pedigree_function'])],
-            'Age': [float(feature_data['age'])],
-        }
+        row_vals = [
+            float(feature_data['pregnancies']),
+            float(feature_data['glucose']),
+            float(feature_data['blood_pressure']),
+            float(feature_data['skin_thickness']),
+            float(feature_data['insulin']),
+            float(feature_data['bmi']),
+            float(feature_data['diabetes_pedigree_function']),
+            float(feature_data['age'])
+        ]
 
-        X_df = pd.DataFrame(input_dict)[features]
+        X_df = pd.DataFrame([row_vals], columns=features)
 
         # Handle medically implausible 0 values during inference (replace 0 with NaN for pipeline imputer)
         for col in ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']:

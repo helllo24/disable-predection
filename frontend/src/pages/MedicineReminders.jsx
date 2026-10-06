@@ -255,10 +255,27 @@ const MedicineReminders = () => {
             </div>
           </div>
 
-          <button className="btn btn-primary" onClick={openAddModal} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Plus size={18} />
-            <span>Add Medicine Reminder</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <PageGuideModal
+              title="Medication Reminders & Alarm System"
+              purpose="Allows patients to maintain medication schedules, track daily dosages, and receive active in-browser popup alarms and notifications."
+              howItWorks={[
+                "Saves medication schedules (Medicine Name, Dosage, Frequency, Reminder Time, Notes) in database.",
+                "Background clock worker checks active reminders every 15 seconds against local system time.",
+                "Triggers native HTML5 Browser Notifications and an active glowing alarm banner when reminder time matches current time."
+              ]}
+              howToUse={[
+                "Click '+ Add Medicine Reminder' to enter medication details and reminder time.",
+                "Toggle reminder switches ON/OFF to activate or pause alarm monitoring.",
+                "Allow Browser Notifications when prompted to receive desktop popups even when tab is in background."
+              ]}
+            />
+
+            <button className="btn btn-primary" onClick={openAddModal} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Plus size={18} />
+              <span>Add Medicine Reminder</span>
+            </button>
+          </div>
         </div>
       </div>
 

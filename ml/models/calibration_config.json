@@ -1,0 +1,11 @@
+{
+  "base_model": "HistGradientBoosting",
+  "selected_calibration_method": "Isotonic",
+  "fit_scope": "VALIDATION_DATA_ONLY (X_val)",
+  "validation_brier_scores": {
+    "Uncalibrated": 0.0028,
+    "Sigmoid (Platt)": 0.0031,
+    "Isotonic": 0.0026
+  },
+  "saved_calibrated_model_path": "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\smart-healthcare-assistant\\ml\\models\\diabetes_calibrated_model.joblib"
+}

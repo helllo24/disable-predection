@@ -14,27 +14,24 @@ db_name = os.getenv("DB_NAME", "smart_healthcare_db")
 
 DATABASE_URL = None
 
-if db_user and db_password and db_host:
+if db_user and db_password and db_host and os.getenv("USE_CLOUD_MYSQL", "false").lower() == "true":
     mysql_url = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
     try:
-        # Test Cloud MySQL connection with a short timeout to prevent server hang
         test_engine = create_engine(
             mysql_url,
             pool_pre_ping=True,
-            connect_args={"connect_timeout": 5}
+            connect_args={"connect_timeout": 2}
         )
         with test_engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         DATABASE_URL = mysql_url
         print("[DB Info] Connected successfully to Cloud MySQL Database.")
     except Exception as err:
-        print(f"[DB Warning] Could not connect to Cloud MySQL database ({err}). Falling back to local SQLite database.")
+        print(f"[DB Warning] Could not connect to Cloud MySQL ({err}). Using local SQLite database.")
         DATABASE_URL = "sqlite:///./smart_healthcare.db"
 else:
-    DATABASE_URL = os.getenv(
-        "DATABASE_URL",
-        "sqlite:///./smart_healthcare.db"
-    )
+    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./smart_healthcare.db")
+    print("[DB Info] Using local SQLite database: smart_healthcare.db")
 
 connect_args = {}
 if DATABASE_URL.startswith("sqlite"):

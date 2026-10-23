@@ -24,14 +24,14 @@ def test_research_endpoints_direct():
 
     xgb_metrics = val_data["models"]["XGBoost"]
     print(f"       -> Internal CV AUC: {xgb_metrics['internal_validation']['auc_mean']}")
-    print(f"       -> External AUC (Mendeley n=1,168): {xgb_metrics['external_validation']['auc']}")
-    print(f"       -> Optimism Bias Drop: -{xgb_metrics['optimism_bias']['relative_auc_drop_pct']}%")
+    print(f"       -> External Validation Status: {xgb_metrics['external_validation']['status']}")
+    print(f"       -> External Notice: {xgb_metrics['external_validation']['notice']}")
 
     # 2. Subgroup Fairness Analysis Endpoint
     fair_data = get_fairness_analysis()
     assert "subgroup_fairness" in fair_data, "Missing subgroup_fairness"
     print("[PASS] get_fairness_analysis()")
-    print(f"       -> Age Fairness Gap (Young vs Older): {fair_data['subgroup_fairness']['XGBoost']['age_fairness_gap']}")
+    print(f"       -> Internal Pima Subgroups: {fair_data['subgroup_fairness']['XGBoost']['internal_pima_subgroups']}")
 
     # 3. Calibration Metrics Endpoint
     cal_data = get_calibration_metrics()
@@ -55,3 +55,4 @@ def test_research_endpoints_direct():
 
 if __name__ == "__main__":
     test_research_endpoints_direct()
+

@@ -221,18 +221,18 @@ const DietRecommendation = () => {
               marginTop: '1.5rem',
               padding: '0.85rem 1rem',
               borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(15, 23, 42, 0.7)',
-              border: '1px solid var(--border-color)',
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fde68a',
               fontSize: '0.8rem',
-              color: 'var(--text-muted)',
+              color: '#92400e',
               display: 'flex',
               gap: '0.65rem',
               alignItems: 'flex-start',
             }}
           >
-            <ShieldAlert size={18} style={{ minWidth: 18, color: 'var(--accent-amber)', marginTop: 2 }} />
+            <ShieldAlert size={18} style={{ minWidth: 18, color: '#d97706', marginTop: 2 }} />
             <span>
-              <strong>Safety Guidance:</strong> This diet recommendation is for general informational and educational guidance only and is not a medical nutrition prescription. Please consult a registered dietitian or healthcare professional for medical nutrition therapy.
+              <strong style={{ color: '#78350f' }}>Safety Guidance:</strong> This diet recommendation is for general informational and educational guidance only and is not a medical nutrition prescription. Please consult a registered dietitian or healthcare professional for medical nutrition therapy.
             </span>
           </div>
         </div>
@@ -299,37 +299,37 @@ const DietRecommendation = () => {
 
               {/* Sample Meal Ideas */}
               {recs.general_meal_ideas && (
-                <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)', display: 'block', marginBottom: '0.65rem' }}>
+                <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: '0.65rem' }}>
                     General Sample Meal Ideas:
                   </span>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.8rem' }}>
                     <div>
-                      <strong style={{ color: 'var(--primary-500)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <strong style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                         <Coffee size={14} /> Breakfast:
                       </strong>
-                      <span style={{ color: 'var(--text-muted)' }}>{recs.general_meal_ideas.breakfast}</span>
+                      <span style={{ color: '#475569' }}>{recs.general_meal_ideas.breakfast}</span>
                     </div>
 
                     <div>
-                      <strong style={{ color: 'var(--primary-500)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <strong style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                         <Sun size={14} /> Lunch:
                       </strong>
-                      <span style={{ color: 'var(--text-muted)' }}>{recs.general_meal_ideas.lunch}</span>
+                      <span style={{ color: '#475569' }}>{recs.general_meal_ideas.lunch}</span>
                     </div>
 
                     <div>
-                      <strong style={{ color: 'var(--primary-500)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <strong style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                         <Moon size={14} /> Dinner:
                       </strong>
-                      <span style={{ color: 'var(--text-muted)' }}>{recs.general_meal_ideas.dinner}</span>
+                      <span style={{ color: '#475569' }}>{recs.general_meal_ideas.dinner}</span>
                     </div>
 
                     <div>
-                      <strong style={{ color: 'var(--primary-500)', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                      <strong style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                         <Cookie size={14} /> Snacks:
                       </strong>
-                      <span style={{ color: 'var(--text-muted)' }}>{recs.general_meal_ideas.snacks}</span>
+                      <span style={{ color: '#475569' }}>{recs.general_meal_ideas.snacks}</span>
                     </div>
                   </div>
                 </div>
@@ -344,16 +344,16 @@ const DietRecommendation = () => {
                     gap: '0.75rem',
                     padding: '0.85rem 1rem',
                     borderRadius: 'var(--radius-sm)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.12)',
-                    border: '1px solid rgba(59, 130, 246, 0.3)',
-                    color: 'var(--text-main)',
+                    backgroundColor: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    color: '#0f172a',
                     fontSize: '0.85rem',
                   }}
                 >
-                  <Droplet size={22} style={{ color: '#3b82f6', minWidth: 22 }} />
+                  <Droplet size={22} style={{ color: '#2563eb', minWidth: 22 }} />
                   <div>
-                    <strong style={{ color: '#3b82f6', display: 'block', fontSize: '0.85rem' }}>Hydration Guidance</strong>
-                    <span style={{ color: 'var(--text-muted)' }}>{recs.hydration_guidance}</span>
+                    <strong style={{ color: '#1d4ed8', display: 'block', fontSize: '0.85rem' }}>Hydration Guidance</strong>
+                    <span style={{ color: '#475569' }}>{recs.hydration_guidance}</span>
                   </div>
                 </div>
               )}
@@ -363,14 +363,14 @@ const DietRecommendation = () => {
               style={{
                 textAlign: 'center',
                 padding: '4rem 1rem',
-                color: 'var(--text-muted)',
-                backgroundColor: 'rgba(15, 23, 42, 0.4)',
+                color: '#475569',
+                backgroundColor: '#f8fafc',
                 borderRadius: 'var(--radius-md)',
-                border: '1px dashed var(--border-color)',
+                border: '1px dashed #cbd5e1',
               }}
             >
-              <Utensils size={44} style={{ margin: '0 auto 1rem', color: 'var(--text-muted)' }} />
-              <p>Select your preferences on the left to generate personalized diet guidance.</p>
+              <Utensils size={44} style={{ margin: '0 auto 1rem', color: '#2563eb' }} />
+              <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>Select your preferences on the left to generate personalized diet guidance.</p>
             </div>
           )}
         </div>

@@ -1,0 +1,341 @@
+{
+  "model_version": "1.0.0",
+  "dataset_name": "Healthcare EHR 100K Diabetes Prediction Dataset",
+  "dataset_version": "1.0.0",
+  "preprocessing_version": "1.0.0",
+  "algorithm": "HistGradientBoosting",
+  "target": "diabetes",
+  "threshold": 0.3,
+  "selected_threshold": 0.3,
+  "threshold_rationale": "Selected to optimize false-negative reduction in clinical screening (Sensitivity >= 88%) while maintaining strong specificity and NPV.",
+  "training_configuration": {
+    "training_date": "2026-10-07",
+    "random_seed": 42,
+    "train_val_test_split": "70/15/15",
+    "train_rows": 70000,
+    "val_rows": 15000,
+    "test_rows": 15000,
+    "cross_validation_folds": 5,
+    "cross_validation_strategy": "StratifiedKFold",
+    "calibration_method": "Isotonic"
+  },
+  "features": {
+    "raw_feature_order": [
+      "gender",
+      "age",
+      "hypertension",
+      "heart_disease",
+      "smoking_history",
+      "bmi",
+      "HbA1c_level",
+      "blood_glucose_level"
+    ],
+    "transformed_feature_order": [
+      "age",
+      "bmi",
+      "HbA1c_level",
+      "blood_glucose_level",
+      "gender_Female",
+      "gender_Male",
+      "gender_Other",
+      "smoking_history_No Info",
+      "smoking_history_current",
+      "smoking_history_ever",
+      "smoking_history_former",
+      "smoking_history_never",
+      "smoking_history_not current",
+      "hypertension",
+      "heart_disease"
+    ],
+    "schema": {
+      "gender": {
+        "type": "string",
+        "allowed_values": [
+          "Female",
+          "Male",
+          "Other"
+        ],
+        "description": "Patient biological sex"
+      },
+      "age": {
+        "type": "float",
+        "range": [
+          0.08,
+          80.0
+        ],
+        "description": "Patient age in years"
+      },
+      "hypertension": {
+        "type": "int",
+        "allowed_values": [
+          0,
+          1
+        ],
+        "description": "Hypertension diagnosis indicator"
+      },
+      "heart_disease": {
+        "type": "int",
+        "allowed_values": [
+          0,
+          1
+        ],
+        "description": "Heart disease diagnosis indicator"
+      },
+      "smoking_history": {
+        "type": "string",
+        "allowed_values": [
+          "never",
+          "No Info",
+          "current",
+          "former",
+          "ever",
+          "not current"
+        ],
+        "description": "Smoking history category"
+      },
+      "bmi": {
+        "type": "float",
+        "range": [
+          10.0,
+          95.0
+        ],
+        "description": "Body Mass Index (kg/m^2)"
+      },
+      "HbA1c_level": {
+        "type": "float",
+        "range": [
+          3.5,
+          9.0
+        ],
+        "description": "Glycated hemoglobin percentage (%)"
+      },
+      "blood_glucose_level": {
+        "type": "int",
+        "range": [
+          80,
+          300
+        ],
+        "description": "Blood glucose concentration (mg/dL)"
+      }
+    }
+  },
+  "raw_feature_schema": {
+    "gender": {
+      "type": "string",
+      "allowed_values": [
+        "Female",
+        "Male",
+        "Other"
+      ],
+      "description": "Patient biological sex"
+    },
+    "age": {
+      "type": "float",
+      "range": [
+        0.08,
+        80.0
+      ],
+      "description": "Patient age in years"
+    },
+    "hypertension": {
+      "type": "int",
+      "allowed_values": [
+        0,
+        1
+      ],
+      "description": "Hypertension diagnosis indicator"
+    },
+    "heart_disease": {
+      "type": "int",
+      "allowed_values": [
+        0,
+        1
+      ],
+      "description": "Heart disease diagnosis indicator"
+    },
+    "smoking_history": {
+      "type": "string",
+      "allowed_values": [
+        "never",
+        "No Info",
+        "current",
+        "former",
+        "ever",
+        "not current"
+      ],
+      "description": "Smoking history category"
+    },
+    "bmi": {
+      "type": "float",
+      "range": [
+        10.0,
+        95.0
+      ],
+      "description": "Body Mass Index (kg/m^2)"
+    },
+    "HbA1c_level": {
+      "type": "float",
+      "range": [
+        3.5,
+        9.0
+      ],
+      "description": "Glycated hemoglobin percentage (%)"
+    },
+    "blood_glucose_level": {
+      "type": "int",
+      "range": [
+        80,
+        300
+      ],
+      "description": "Blood glucose concentration (mg/dL)"
+    }
+  },
+  "raw_feature_order": [
+    "gender",
+    "age",
+    "hypertension",
+    "heart_disease",
+    "smoking_history",
+    "bmi",
+    "HbA1c_level",
+    "blood_glucose_level"
+  ],
+  "transformed_feature_order": [
+    "age",
+    "bmi",
+    "HbA1c_level",
+    "blood_glucose_level",
+    "gender_Female",
+    "gender_Male",
+    "gender_Other",
+    "smoking_history_No Info",
+    "smoking_history_current",
+    "smoking_history_ever",
+    "smoking_history_former",
+    "smoking_history_never",
+    "smoking_history_not current",
+    "hypertension",
+    "heart_disease"
+  ],
+  "feature_metadata": {
+    "num_raw_features": 8,
+    "num_transformed_features": 15,
+    "categorical_encoding": "OneHotEncoder(drop=None, handle_unknown='ignore')",
+    "numerical_imputation": "SimpleImputer(strategy='median')",
+    "numerical_scaling": "StandardScaler()"
+  },
+  "metrics": {
+    "roc_auc": "0.9985 (95% CI: 0.9968 \u2013 0.9997)",
+    "sensitivity_recall": "0.9817 (95% CI: 0.9738 \u2013 0.9888)",
+    "specificity": "0.9958 (95% CI: 0.9948 \u2013 0.9969)",
+    "precision_ppv": "0.9554 (95% CI: 0.9437 \u2013 0.9662)",
+    "f1_score": "0.9683 (95% CI: 0.9612 \u2013 0.9753)",
+    "accuracy": "0.9947 (95% CI: 0.9935 \u2013 0.9958)"
+  },
+  "performance_metrics_test_set": {
+    "roc_auc": "0.9985 (95% CI: 0.9968 \u2013 0.9997)",
+    "sensitivity_recall": "0.9817 (95% CI: 0.9738 \u2013 0.9888)",
+    "specificity": "0.9958 (95% CI: 0.9948 \u2013 0.9969)",
+    "precision_ppv": "0.9554 (95% CI: 0.9437 \u2013 0.9662)",
+    "f1_score": "0.9683 (95% CI: 0.9612 \u2013 0.9753)",
+    "accuracy": "0.9947 (95% CI: 0.9935 \u2013 0.9958)"
+  },
+  "calibration": {
+    "calibration_method": "Isotonic",
+    "brier_score": 0.0034,
+    "calibration_slope": 0.9822,
+    "calibration_intercept": -0.0321
+  },
+  "calibration_metrics_test_set": {
+    "brier_score": 0.0034,
+    "calibration_slope": 0.9822,
+    "calibration_intercept": -0.0321
+  },
+  "shap_metadata": {
+    "base_expected_value": -8.578,
+    "global_rankings": [
+      {
+        "rank": 1,
+        "feature": "HbA1c_level",
+        "mean_abs_shap": 2.6765
+      },
+      {
+        "rank": 2,
+        "feature": "blood_glucose_level",
+        "mean_abs_shap": 0.3289
+      },
+      {
+        "rank": 3,
+        "feature": "age",
+        "mean_abs_shap": 0.1369
+      },
+      {
+        "rank": 4,
+        "feature": "bmi",
+        "mean_abs_shap": 0.0788
+      },
+      {
+        "rank": 5,
+        "feature": "hypertension",
+        "mean_abs_shap": 0.0117
+      },
+      {
+        "rank": 6,
+        "feature": "heart_disease",
+        "mean_abs_shap": 0.0069
+      },
+      {
+        "rank": 7,
+        "feature": "smoking_history_current",
+        "mean_abs_shap": 0.0028
+      },
+      {
+        "rank": 8,
+        "feature": "smoking_history_No Info",
+        "mean_abs_shap": 0.002
+      },
+      {
+        "rank": 9,
+        "feature": "smoking_history_never",
+        "mean_abs_shap": 0.0013
+      },
+      {
+        "rank": 10,
+        "feature": "gender_Female",
+        "mean_abs_shap": 0.0011
+      },
+      {
+        "rank": 11,
+        "feature": "smoking_history_ever",
+        "mean_abs_shap": 0.0011
+      },
+      {
+        "rank": 12,
+        "feature": "smoking_history_not current",
+        "mean_abs_shap": 0.0009
+      },
+      {
+        "rank": 13,
+        "feature": "gender_Male",
+        "mean_abs_shap": 0.0008
+      },
+      {
+        "rank": 14,
+        "feature": "smoking_history_former",
+        "mean_abs_shap": 0.0004
+      },
+      {
+        "rank": 15,
+        "feature": "gender_Other",
+        "mean_abs_shap": 0.0
+      }
+    ]
+  },
+  "artifacts": {
+    "preprocessor": "preprocessor.joblib",
+    "model": "model.joblib",
+    "calibrated_model": "calibrated_model.joblib",
+    "manifest": "model_manifest.json"
+  },
+  "clinical_disclaimer": "This model outputs an estimated risk probability for clinical decision-support and does NOT provide an automated medical diagnosis."
+}

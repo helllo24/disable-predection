@@ -1,0 +1,138 @@
+{
+  "registry_version": "2.0.0",
+  "last_updated": "2026-10-07",
+  "project": "Diabetes Prediction Research Project",
+  "datasets": [
+    {
+      "dataset_id": "ehr_100k_diabetes",
+      "dataset_name": "Healthcare EHR 100K Diabetes Prediction Dataset",
+      "source": "Kaggle (iammustafatz/diabetes-prediction-dataset) / Anonymized Clinical EHR",
+      "version_date": "2023-03-24",
+      "record_count": 100000,
+      "feature_count": 8,
+      "features": [
+        "gender",
+        "age",
+        "hypertension",
+        "heart_disease",
+        "smoking_history",
+        "bmi",
+        "HbA1c_level",
+        "blood_glucose_level"
+      ],
+      "target": "diabetes (0: Non-Diabetic, 1: Diabetic)",
+      "target_distribution": {
+        "negative_count": 91500,
+        "negative_pct": 91.5,
+        "positive_count": 8500,
+        "positive_pct": 8.5
+      },
+      "population": "General population (All Ages: 0.08–80 yrs, Dual-Gender: 58.5% Female, 41.4% Male, 0.02% Other)",
+      "provenance": "REAL (Anonymized Patient Electronic Health Records)",
+      "intended_role": "RECOMMENDED_MAIN_TRAINING_DATASET",
+      "data_path": "data/raw/diabetes_prediction_100k.csv",
+      "processed_path": "data/processed/diabetes_100k_cleaned.parquet"
+    },
+    {
+      "dataset_id": "pima_indians_768",
+      "dataset_name": "Pima Indians Diabetes Dataset",
+      "source": "UCI Machine Learning Repository / NIDDK (National Institute of Diabetes and Digestive and Kidney Diseases)",
+      "version_date": "1990-05-09",
+      "record_count": 768,
+      "feature_count": 8,
+      "features": [
+        "Pregnancies",
+        "Glucose",
+        "BloodPressure",
+        "SkinThickness",
+        "Insulin",
+        "BMI",
+        "DiabetesPedigreeFunction",
+        "Age"
+      ],
+      "target": "Outcome (0: Non-Diabetic, 1: Diabetic)",
+      "target_distribution": {
+        "negative_count": 500,
+        "negative_pct": 65.1,
+        "positive_count": 268,
+        "positive_pct": 34.9
+      },
+      "population": "Demographically restricted cohort (100% Female, Pima Indian ancestry, Age >= 21 years)",
+      "provenance": "REAL (Clinical study cohort)",
+      "intended_role": "RECOMMENDED_BENCHMARK_DATASET",
+      "data_path": "data/benchmark/pima_indians_diabetes.csv"
+    },
+    {
+      "dataset_id": "cdc_brfss_253k",
+      "dataset_name": "CDC BRFSS 2015 Diabetes Health Indicators Dataset",
+      "source": "Centers for Disease Control and Prevention (CDC) BRFSS Survey",
+      "version_date": "2015-12-31",
+      "record_count": 253680,
+      "feature_count": 21,
+      "features": [
+        "HighBP",
+        "HighChol",
+        "CholCheck",
+        "BMI",
+        "Smoker",
+        "Stroke",
+        "HeartDiseaseorAttack",
+        "PhysActivity",
+        "Fruits",
+        "Veggies",
+        "HvyAlcoholConsump",
+        "AnyHealthcare",
+        "NoDocbcCost",
+        "GenHlth",
+        "MentHlth",
+        "PhysHlth",
+        "DiffWalk",
+        "Sex",
+        "Age",
+        "Education",
+        "Income"
+      ],
+      "target": "Diabetes_binary (0: No Diabetes, 1: Prediabetes/Diabetes)",
+      "target_distribution": {
+        "negative_count": 218334,
+        "negative_pct": 86.1,
+        "positive_count": 35346,
+        "positive_pct": 13.9
+      },
+      "population": "US Adult Population (Epidemiological Survey, Both Sexes)",
+      "provenance": "REAL (Self-Reported Telephone Health Survey)",
+      "intended_role": "EPIDEMIOLOGICAL_SURVEY_BENCHMARK",
+      "data_path": "data/benchmark/cdc_brfss_diabetes.csv"
+    },
+    {
+      "dataset_id": "mendeley_1168_real",
+      "dataset_name": "Genuine Mendeley Diabetes Dataset",
+      "source": "Mendeley Data / DOI: 10.17632/nxnty5g7y6.2 (Rashid, 2021)",
+      "version_date": "2021-06-15",
+      "record_count": 1168,
+      "feature_count": 9,
+      "features": [
+        "Pregnancies",
+        "Glucose",
+        "BloodPressure",
+        "SkinThickness",
+        "Insulin",
+        "BMI",
+        "DiabetesPedigreeFunction",
+        "Age",
+        "Sex"
+      ],
+      "target": "Outcome (0: Non-Diabetic, 1: Diabetic)",
+      "target_distribution": {
+        "negative_count": 771,
+        "negative_pct": 66.0,
+        "positive_count": 397,
+        "positive_pct": 34.0
+      },
+      "population": "Hospital Clinical Cohort (Age 21-81, Both Sexes)",
+      "provenance": "REAL (Hospital Electronic Health Records)",
+      "intended_role": "RECOMMENDED_EXTERNAL_VALIDATION_DATASET",
+      "data_path": "data/external/mendeley_diabetes_real.csv"
+    }
+  ]
+}

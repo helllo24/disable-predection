@@ -1,7 +1,7 @@
 from app.routes.health import router as health_router
 from app.routes.auth import router as auth_router
 from app.routes.bmi import router as bmi_router
-from app.routes.diabetes import router as diabetes_router
+from app.routes.diabetes import router as diabetes_router, dedicated_router as dedicated_diabetes_router
 from app.routes.disease import router as disease_router
 from app.routes.health_risk import router as health_risk_router
 from app.routes.diet import router as diet_router
@@ -19,6 +19,7 @@ __all__ = [
     "auth_router",
     "bmi_router",
     "diabetes_router",
+    "dedicated_diabetes_router",
     "disease_router",
     "health_risk_router",
     "diet_router",
@@ -31,3 +32,4 @@ __all__ = [
     "diabetes_complications_router",
     "research_router"
 ]
+

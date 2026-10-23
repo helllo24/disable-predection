@@ -48,6 +48,11 @@ const BMI = () => {
   const [loadingHistory, setLoadingHistory] = useState(true);
 
   const fetchHistory = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLoadingHistory(false);
+      return;
+    }
     try {
       setLoadingHistory(true);
       const data = await getBMIHistory();
@@ -56,7 +61,7 @@ const BMI = () => {
         setResult(data[0]); // Default to latest record if available
       }
     } catch (err) {
-      console.error('Failed to load BMI history:', err);
+      console.warn('Could not load BMI history:', err);
     } finally {
       setLoadingHistory(false);
     }
@@ -268,25 +273,25 @@ const BMI = () => {
               marginTop: '1.5rem',
               padding: '0.75rem 1rem',
               borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(15, 23, 42, 0.6)',
-              border: '1px solid var(--border-color)',
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fde68a',
               fontSize: '0.8rem',
-              color: 'var(--text-muted)',
+              color: '#92400e',
               display: 'flex',
               gap: '0.5rem',
               alignItems: 'flex-start',
             }}
           >
-            <Info size={16} style={{ minWidth: 16, color: 'var(--primary-500)', marginTop: 2 }} />
+            <Info size={16} style={{ minWidth: 16, color: '#d97706', marginTop: 2 }} />
             <span>
-              <strong>Medical Disclaimer:</strong> BMI is a general screening measure and does not replace professional medical advice or clinical diagnosis.
+              <strong style={{ color: '#78350f' }}>Medical Disclaimer:</strong> BMI is a general screening measure and does not replace professional medical advice or clinical diagnosis.
             </span>
           </div>
         </div>
 
         {/* Result Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: 'var(--text-main)' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: '#0f172a' }}>
             BMI Calculation Result
           </h2>
 
@@ -297,12 +302,12 @@ const BMI = () => {
                   textAlign: 'center',
                   padding: '1.5rem 1rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'rgba(15, 23, 42, 0.7)',
+                  backgroundColor: '#f8fafc',
                   border: `1px solid ${categoryStyle.border}`,
                   marginBottom: '1.5rem',
                 }}
               >
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>
                   Calculated BMI
                 </span>
                 <div style={{ fontSize: '3rem', fontWeight: 800, color: categoryStyle.text, lineHeight: 1.1, margin: '0.35rem 0' }}>
@@ -317,6 +322,7 @@ const BMI = () => {
                     border: `1px solid ${categoryStyle.border}`,
                     fontSize: '0.95rem',
                     padding: '0.4rem 1rem',
+                    fontWeight: 700,
                   }}
                 >
                   Category: {result.category}
@@ -325,7 +331,7 @@ const BMI = () => {
 
               {/* Visual BMI Gauge Spectrum */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b', marginBottom: '0.35rem', fontWeight: 600 }}>
                   <span>Underweight (&lt;18.5)</span>
                   <span>Normal (18.5-24.9)</span>
                   <span>Overweight (25-29.9)</span>
@@ -365,23 +371,23 @@ const BMI = () => {
                   gridTemplateColumns: '1fr 1fr',
                   gap: '0.75rem',
                   fontSize: '0.85rem',
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: '#f8fafc',
                   padding: '1rem',
                   borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-color)',
+                  border: '1px solid #e2e8f0',
                 }}
               >
                 <div>
-                  <span style={{ color: 'var(--text-muted)', display: 'block' }}>Input Height</span>
-                  <strong>{result.height} {result.height_unit}</strong> ({result.height_m.toFixed(2)} m)
+                  <span style={{ color: '#64748b', display: 'block' }}>Input Height</span>
+                  <strong style={{ color: '#0f172a' }}>{result.height} {result.height_unit}</strong> ({result.height_m.toFixed(2)} m)
                 </div>
                 <div>
-                  <span style={{ color: 'var(--text-muted)', display: 'block' }}>Input Weight</span>
-                  <strong>{result.weight} {result.weight_unit}</strong> ({result.weight_kg.toFixed(1)} kg)
+                  <span style={{ color: '#64748b', display: 'block' }}>Input Weight</span>
+                  <strong style={{ color: '#0f172a' }}>{result.weight} {result.weight_unit}</strong> ({result.weight_kg.toFixed(1)} kg)
                 </div>
-                <div style={{ gridColumn: 'span 2', borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
-                  <span style={{ color: 'var(--text-muted)', display: 'block' }}>Calculated At</span>
-                  <strong>{new Date(result.created_at).toLocaleString()}</strong>
+                <div style={{ gridColumn: 'span 2', borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
+                  <span style={{ color: '#64748b', display: 'block' }}>Calculated At</span>
+                  <strong style={{ color: '#0f172a' }}>{new Date(result.created_at).toLocaleString()}</strong>
                 </div>
               </div>
             </div>
@@ -390,14 +396,14 @@ const BMI = () => {
               style={{
                 textAlign: 'center',
                 padding: '3rem 1rem',
-                color: 'var(--text-muted)',
-                backgroundColor: 'rgba(15, 23, 42, 0.4)',
+                color: '#475569',
+                backgroundColor: '#f8fafc',
                 borderRadius: 'var(--radius-md)',
-                border: '1px dashed var(--border-color)',
+                border: '1px dashed #cbd5e1',
               }}
             >
-              <Scale size={40} style={{ margin: '0 auto 1rem', color: 'var(--text-muted)' }} />
-              <p>Enter your height and weight on the left to compute your BMI result.</p>
+              <Scale size={40} style={{ margin: '0 auto 1rem', color: '#2563eb' }} />
+              <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>Enter your height and weight on the left to compute your BMI result.</p>
             </div>
           )}
         </div>

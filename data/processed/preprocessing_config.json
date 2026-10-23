@@ -1,0 +1,51 @@
+{
+  "dataset_version": "1.0.0",
+  "preprocessing_version": "1.0.0",
+  "random_seed": 42,
+  "split_strategy": "Stratified 70/15/15 Split",
+  "isolation_rule": "Final TEST set remains untouched until final model evaluation. Preprocessing fitted strictly on TRAIN.",
+  "counts": {
+    "train": {
+      "rows": 70000,
+      "pct": 70.0,
+      "negative_count": 64164,
+      "positive_count": 5836,
+      "positive_pct": 8.34
+    },
+    "validation": {
+      "rows": 15000,
+      "pct": 15.0,
+      "negative_count": 13749,
+      "positive_count": 1251,
+      "positive_pct": 8.34
+    },
+    "test": {
+      "rows": 15000,
+      "pct": 15.0,
+      "negative_count": 13750,
+      "positive_count": 1250,
+      "positive_pct": 8.33
+    }
+  },
+  "feature_list": [
+    "age",
+    "bmi",
+    "HbA1c_level",
+    "blood_glucose_level",
+    "gender_Female",
+    "gender_Male",
+    "gender_Other",
+    "smoking_history_No Info",
+    "smoking_history_current",
+    "smoking_history_ever",
+    "smoking_history_former",
+    "smoking_history_never",
+    "smoking_history_not current",
+    "hypertension",
+    "heart_disease"
+  ],
+  "benchmark_isolation": {
+    "pima_dataset_path": "data/benchmark/pima_indians_diabetes.csv",
+    "pima_isolation_note": "Pima Indians dataset (n=768) retained as a separate benchmark experiment. Zero mixing with 100K main dataset."
+  }
+}

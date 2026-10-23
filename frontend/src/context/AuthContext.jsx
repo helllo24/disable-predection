@@ -20,10 +20,17 @@ export const AuthProvider = ({ children }) => {
         const response = await api.get('/api/auth/me');
         setUser(response.data);
       } catch (error) {
-        console.error('Failed to authenticate stored token:', error);
-        localStorage.removeItem('token');
-        setToken(null);
-        setUser(null);
+        console.error('Session check failed:', error);
+        // Only invalidate session if backend explicitly returns 401 Unauthorized or 403 Forbidden
+        // Do NOT log out on connection errors, backend restarts, or network flickers
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          console.warn('Token expired or invalid. Logging out.');
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
+        } else {
+          console.info('Backend temporarily unreachable. Preserving user session.');
+        }
       } finally {
         setLoading(false);
       }

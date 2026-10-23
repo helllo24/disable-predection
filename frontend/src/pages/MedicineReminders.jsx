@@ -338,17 +338,17 @@ const MedicineReminders = () => {
             style={{
               textAlign: 'center',
               padding: '3.5rem 1rem',
-              color: 'var(--text-muted)',
-              backgroundColor: 'rgba(15, 23, 42, 0.4)',
+              color: '#475569',
+              backgroundColor: '#f8fafc',
               borderRadius: 'var(--radius-md)',
-              border: '1px dashed var(--border-color)',
+              border: '1px dashed #cbd5e1',
             }}
           >
-            <Pill size={44} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-            <p style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--text-main)' }}>
+            <Pill size={44} style={{ margin: '0 auto 1rem', color: '#2563eb' }} />
+            <p style={{ fontWeight: 600, fontSize: '1.1rem', color: '#0f172a' }}>
               {activeTab === 'today' ? 'No medicine reminders today.' : 'No medication reminders configured.'}
             </p>
-            <span style={{ fontSize: '0.85rem' }}>
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
               {activeTab === 'today'
                 ? 'You have no active medications scheduled for today.'
                 : 'Click "Add Medicine Reminder" above to set up your prescription schedule.'}
@@ -371,7 +371,7 @@ const MedicineReminders = () => {
                   flexDirection: 'column',
                   justifyContent: 'space-between',
                   opacity: rec.active ? 1 : 0.6,
-                  borderColor: rec.active ? 'var(--border-color)' : 'rgba(30, 45, 74, 0.4)',
+                  borderColor: rec.active ? '#cbd5e1' : '#e2e8f0',
                 }}
               >
                 <div>
@@ -430,7 +430,7 @@ const MedicineReminders = () => {
                       {rec.start_date} {rec.end_date ? `to ${rec.end_date}` : '(Ongoing)'}
                     </div>
                     {rec.notes && (
-                      <div style={{ fontStyle: 'italic', marginTop: '0.2rem', background: 'rgba(15, 23, 42, 0.4)', padding: '0.4rem 0.6rem', borderRadius: 4 }}>
+                      <div style={{ fontStyle: 'italic', marginTop: '0.2rem', background: '#f1f5f9', color: '#334155', padding: '0.4rem 0.6rem', borderRadius: 4, border: '1px solid #e2e8f0' }}>
                         "{rec.notes}"
                       </div>
                     )}
@@ -477,10 +477,10 @@ const MedicineReminders = () => {
           marginBottom: '2.5rem',
           padding: '0.85rem 1.25rem',
           borderRadius: 'var(--radius-md)',
-          backgroundColor: 'rgba(15, 23, 42, 0.7)',
-          border: '1px solid var(--border-color)',
+          backgroundColor: '#fef3c7',
+          border: '1px solid #fde68a',
           fontSize: '0.85rem',
-          color: 'var(--text-muted)',
+          color: '#92400e',
           display: 'flex',
           gap: '0.75rem',
           alignItems: 'flex-start',

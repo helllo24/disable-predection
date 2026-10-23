@@ -55,16 +55,21 @@ const DiseasePrediction = () => {
         setLoadingSymptoms(false);
       }
 
-      try {
-        setLoadingHistory(true);
-        const historyData = await getDiseaseHistory();
-        setHistory(historyData || []);
-        if (historyData && historyData.length > 0 && !result) {
-          setResult(historyData[0]); // Default to latest prediction
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          setLoadingHistory(true);
+          const historyData = await getDiseaseHistory();
+          setHistory(historyData || []);
+          if (historyData && historyData.length > 0 && !result) {
+            setResult(historyData[0]); // Default to latest prediction
+          }
+        } catch (err) {
+          console.warn('Could not load disease history:', err);
+        } finally {
+          setLoadingHistory(false);
         }
-      } catch (err) {
-        console.error('Failed to load disease history:', err);
-      } finally {
+      } else {
         setLoadingHistory(false);
       }
     };
@@ -217,7 +222,7 @@ const DiseasePrediction = () => {
 
           {/* Quick Common Presets */}
           <div style={{ marginBottom: '1rem' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: 700 }}>
               Frequent Symptoms:
             </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
@@ -230,11 +235,12 @@ const DiseasePrediction = () => {
                     onClick={() => toggleSymptom(sym)}
                     style={{
                       fontSize: '0.75rem',
-                      padding: '0.25rem 0.6rem',
+                      padding: '0.3rem 0.65rem',
                       borderRadius: 12,
-                      border: isSelected ? '1px solid var(--primary-500)' : '1px solid var(--border-color)',
-                      backgroundColor: isSelected ? 'rgba(20, 184, 166, 0.2)' : 'rgba(30, 45, 74, 0.4)',
-                      color: isSelected ? 'var(--primary-500)' : 'var(--text-muted)',
+                      border: isSelected ? '1px solid #2563eb' : '1px solid #cbd5e1',
+                      backgroundColor: isSelected ? '#dbeafe' : '#f1f5f9',
+                      color: isSelected ? '#1d4ed8' : '#334155',
+                      fontWeight: isSelected ? 700 : 500,
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                     }}
@@ -248,8 +254,8 @@ const DiseasePrediction = () => {
 
           {/* Selected Symptoms Badges */}
           {selectedSymptoms.length > 0 && (
-            <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: 'rgba(15, 23, 42, 0.6)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--primary-500)', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>
+            <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#f0f9ff', borderRadius: 'var(--radius-sm)', border: '1px solid #bae6fd' }}>
+              <span style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 700, display: 'block', marginBottom: '0.4rem' }}>
                 Selected Symptoms ({selectedSymptoms.length}):
               </span>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
@@ -261,11 +267,12 @@ const DiseasePrediction = () => {
                       alignItems: 'center',
                       gap: '0.25rem',
                       fontSize: '0.75rem',
-                      padding: '0.2rem 0.55rem',
+                      padding: '0.25rem 0.6rem',
                       borderRadius: 10,
-                      backgroundColor: 'rgba(20, 184, 166, 0.25)',
-                      color: 'var(--text-main)',
-                      border: '1px solid rgba(20, 184, 166, 0.4)',
+                      backgroundColor: '#e0f2fe',
+                      color: '#0369a1',
+                      fontWeight: 600,
+                      border: '1px solid #7dd3fc',
                     }}
                   >
                     {formatSymptomName(sym)}
@@ -281,19 +288,19 @@ const DiseasePrediction = () => {
             style={{
               maxHeight: 240,
               overflowY: 'auto',
-              border: '1px solid var(--border-color)',
+              border: '1px solid #cbd5e1',
               borderRadius: 'var(--radius-sm)',
               padding: '0.5rem',
-              backgroundColor: 'rgba(15, 23, 42, 0.4)',
+              backgroundColor: '#f8fafc',
               marginBottom: '1.25rem',
             }}
           >
             {loadingSymptoms ? (
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem' }}>
+              <p style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 500, textAlign: 'center', padding: '1rem' }}>
                 Loading symptom checklist...
               </p>
             ) : filteredSymptoms.length === 0 ? (
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem' }}>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', textAlign: 'center', padding: '1rem' }}>
                 No symptoms matching "{searchQuery}".
               </p>
             ) : (
@@ -311,15 +318,16 @@ const DiseasePrediction = () => {
                         borderRadius: 'var(--radius-sm)',
                         cursor: 'pointer',
                         fontSize: '0.85rem',
-                        backgroundColor: isChecked ? 'rgba(20, 184, 166, 0.12)' : 'transparent',
-                        color: isChecked ? 'var(--primary-500)' : 'var(--text-main)',
+                        backgroundColor: isChecked ? '#e0f2fe' : 'transparent',
+                        color: isChecked ? '#0284c7' : '#0f172a',
+                        fontWeight: isChecked ? 600 : 400,
                       }}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleSymptom(sym)}
-                        style={{ accentColor: 'var(--primary-500)' }}
+                        style={{ accentColor: '#2563eb' }}
                       />
                       <span>{formatSymptomName(sym)}</span>
                     </label>
@@ -345,25 +353,25 @@ const DiseasePrediction = () => {
               marginTop: '1.5rem',
               padding: '0.85rem 1rem',
               borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(15, 23, 42, 0.7)',
-              border: '1px solid var(--border-color)',
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fde68a',
               fontSize: '0.8rem',
-              color: 'var(--text-muted)',
+              color: '#92400e',
               display: 'flex',
               gap: '0.65rem',
               alignItems: 'flex-start',
             }}
           >
-            <ShieldAlert size={18} style={{ minWidth: 18, color: 'var(--accent-amber)', marginTop: 2 }} />
+            <ShieldAlert size={18} style={{ minWidth: 18, color: '#d97706', marginTop: 2 }} />
             <span>
-              <strong>Medical Disclaimer:</strong> This prediction is generated by a machine-learning model for informational purposes and is not a medical diagnosis. Please consult a qualified healthcare professional for proper evaluation.
+              <strong style={{ color: '#78350f' }}>Medical Disclaimer:</strong> This prediction is generated by a machine-learning model for informational purposes and is not a medical diagnosis. Please consult a qualified healthcare professional for proper evaluation.
             </span>
           </div>
         </div>
 
         {/* Prediction Result Display Card */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: 'var(--text-main)' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: '#0f172a' }}>
             ML Disease Assessment Result
           </h2>
 
@@ -374,14 +382,14 @@ const DiseasePrediction = () => {
                   textAlign: 'center',
                   padding: '1.75rem 1rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'rgba(15, 23, 42, 0.85)',
-                  border: '1px solid var(--primary-700)',
+                  backgroundColor: '#f0f9ff',
+                  border: '1px solid #bfdbfe',
                   marginBottom: '1.5rem',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <Cpu size={18} style={{ color: 'var(--primary-500)' }} />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>
+                  <Cpu size={18} style={{ color: '#2563eb' }} />
+                  <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700 }}>
                     Model: {result.model}
                   </span>
                 </div>
@@ -390,7 +398,7 @@ const DiseasePrediction = () => {
                   style={{
                     fontSize: '1.65rem',
                     fontWeight: 800,
-                    color: 'var(--primary-500)',
+                    color: '#1d4ed8',
                     marginBottom: '0.5rem',
                   }}
                 >
@@ -398,21 +406,21 @@ const DiseasePrediction = () => {
                 </div>
 
                 {/* Mandated exact wording constraint */}
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.25rem', padding: '0 0.5rem' }}>
+                <p style={{ fontSize: '0.875rem', color: '#475569', marginBottom: '1.25rem', padding: '0 0.5rem' }}>
                   The model predicts this condition based on the selected symptoms.
                 </p>
 
                 {/* Confidence Bar */}
                 <div style={{ maxWidth: 300, margin: '0 auto' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.35rem' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>Confidence Score</span>
-                    <strong style={{ color: 'var(--primary-500)' }}>{(result.probability * 100).toFixed(1)}%</strong>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Confidence Score</span>
+                    <strong style={{ color: '#2563eb' }}>{(result.probability * 100).toFixed(1)}%</strong>
                   </div>
                   <div
                     style={{
                       height: 10,
                       borderRadius: 5,
-                      backgroundColor: 'rgba(30, 45, 74, 0.8)',
+                      backgroundColor: '#cbd5e1',
                       overflow: 'hidden',
                     }}
                   >
@@ -420,7 +428,7 @@ const DiseasePrediction = () => {
                       style={{
                         height: '100%',
                         width: `${Math.min(100, Math.max(10, result.probability * 100))}%`,
-                        backgroundColor: 'var(--primary-500)',
+                        backgroundColor: '#2563eb',
                         transition: 'width 0.5s ease',
                       }}
                     />
@@ -431,14 +439,14 @@ const DiseasePrediction = () => {
               {/* Symptoms Evaluated Snapshot */}
               <div
                 style={{
-                  background: 'rgba(15, 23, 42, 0.5)',
+                  background: '#f8fafc',
                   padding: '1rem',
                   borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-color)',
+                  border: '1px solid #e2e8f0',
                   fontSize: '0.825rem',
                 }}
               >
-                <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                <span style={{ color: '#334155', display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
                   Evaluated Symptoms ({result.symptoms ? result.symptoms.length : 0}):
                 </span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
@@ -446,11 +454,12 @@ const DiseasePrediction = () => {
                     <span
                       key={`eval-${sym}`}
                       style={{
-                        padding: '0.2rem 0.5rem',
+                        padding: '0.25rem 0.6rem',
                         borderRadius: 8,
-                        backgroundColor: 'rgba(30, 45, 74, 0.6)',
-                        color: 'var(--text-main)',
-                        border: '1px solid var(--border-color)',
+                        backgroundColor: '#e2e8f0',
+                        color: '#0f172a',
+                        fontWeight: 500,
+                        border: '1px solid #cbd5e1',
                       }}
                     >
                       {formatSymptomName(sym)}
@@ -459,7 +468,7 @@ const DiseasePrediction = () => {
                 </div>
 
                 {result.created_at && (
-                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.5rem', marginTop: '0.75rem', color: 'var(--text-muted)' }}>
+                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem', marginTop: '0.75rem', color: '#64748b' }}>
                     Assessment Time: <strong>{new Date(result.created_at).toLocaleString()}</strong>
                   </div>
                 )}
@@ -470,14 +479,14 @@ const DiseasePrediction = () => {
               style={{
                 textAlign: 'center',
                 padding: '4rem 1rem',
-                color: 'var(--text-muted)',
-                backgroundColor: 'rgba(15, 23, 42, 0.4)',
+                color: '#475569',
+                backgroundColor: '#f8fafc',
                 borderRadius: 'var(--radius-md)',
-                border: '1px dashed var(--border-color)',
+                border: '1px dashed #cbd5e1',
               }}
             >
-              <Stethoscope size={44} style={{ margin: '0 auto 1rem', color: 'var(--text-muted)' }} />
-              <p>Select symptoms on the left to evaluate potential medical conditions.</p>
+              <Stethoscope size={44} style={{ margin: '0 auto 1rem', color: '#2563eb' }} />
+              <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>Select symptoms on the left to evaluate potential medical conditions.</p>
             </div>
           )}
         </div>
@@ -537,8 +546,9 @@ const DiseasePrediction = () => {
                               fontSize: '0.725rem',
                               padding: '0.15rem 0.4rem',
                               borderRadius: 6,
-                              backgroundColor: 'rgba(30, 45, 74, 0.6)',
-                              color: 'var(--text-muted)',
+                              backgroundColor: '#e2e8f0',
+                              color: '#334155',
+                              border: '1px solid #cbd5e1',
                             }}
                           >
                             {formatSymptomName(s)}

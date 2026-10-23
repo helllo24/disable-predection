@@ -1,7 +1,60 @@
-from typing import Optional
+from typing import List, Optional, Any
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 
+import math
+
+ALLOWED_GENDERS = {"Female", "Male", "Other"}
+ALLOWED_SMOKING = {"never", "No Info", "current", "former", "ever", "not current"}
+
+class DiabetesClinicalFeaturesRequest(BaseModel):
+    gender: str = Field(..., description="Patient biological sex (Female, Male, Other)")
+    age: float = Field(..., ge=0.08, le=120.0, description="Patient age in years (0.08 to 120.0)")
+    hypertension: int = Field(..., ge=0, le=1, description="Hypertension indicator (0 = No, 1 = Yes)")
+    heart_disease: int = Field(..., ge=0, le=1, description="Heart disease indicator (0 = No, 1 = Yes)")
+    smoking_history: str = Field(..., description="Smoking history category (never, No Info, current, former, ever, not current)")
+    bmi: float = Field(..., ge=10.0, le=120.0, description="Body Mass Index (10.0 to 120.0 kg/m^2)")
+    HbA1c_level: float = Field(..., ge=3.5, le=15.0, description="Glycated hemoglobin percentage (3.5% to 15.0%)")
+    blood_glucose_level: float = Field(..., ge=50.0, le=600.0, description="Blood glucose concentration (50 to 600 mg/dL)")
+
+    @field_validator("age", "bmi", "HbA1c_level", "blood_glucose_level")
+    @classmethod
+    def validate_finite_numeric(cls, v: float, info) -> float:
+        if math.isnan(v) or math.isinf(v):
+            raise ValueError(f"Feature '{info.field_name}' must be a finite numerical value. Received: {v}")
+        return v
+
+    @field_validator("gender")
+    @classmethod
+    def validate_gender(cls, v: str) -> str:
+        if not isinstance(v, str) or v.strip() not in ALLOWED_GENDERS:
+            raise ValueError(f"Invalid gender '{v}'. Allowed biological sex categories: {sorted(list(ALLOWED_GENDERS))}")
+        return v.strip()
+
+    @field_validator("smoking_history")
+    @classmethod
+    def validate_smoking(cls, v: str) -> str:
+        if not isinstance(v, str) or v.strip() not in ALLOWED_SMOKING:
+            raise ValueError(f"Invalid smoking history '{v}'. Allowed categories: {sorted(list(ALLOWED_SMOKING))}")
+        return v.strip()
+
+class FeatureContributionItem(BaseModel):
+    feature: str
+    actual_value: Optional[float] = None
+    shap_contribution: float
+    direction: str
+    relative_contribution_pct: float
+
+class DiabetesPredictResponse(BaseModel):
+    prediction: int = Field(..., description="Binary classification (0 = Low Risk, 1 = High Risk at threshold)")
+    probability: float = Field(..., description="Calibrated risk probability (0.0 to 1.0)")
+    risk_category: str = Field(..., description="Categorical risk stratification (Low Risk, Moderate Risk, High Risk)")
+    threshold: float = Field(..., description="Selected decision threshold (e.g. 0.30)")
+    model_version: str = Field(..., description="Production model package version")
+    top_contributing_features: List[FeatureContributionItem] = Field(default_factory=list, description="Instance SHAP feature contributions")
+    disclaimer: str = Field(..., description="Clinical non-diagnostic decision-support disclaimer")
+
+# Legacy Pima Schemas (Preserved for Backward Compatibility)
 class DiabetesPredictionRequest(BaseModel):
     pregnancies: int = Field(..., ge=0, le=25, description="Number of pregnancies")
     glucose: float = Field(..., ge=0, le=500, description="Plasma glucose concentration")
@@ -44,3 +97,4 @@ class DiabetesPredictionResponse(BaseModel):
 
     class Config:
         from_attributes = True
+

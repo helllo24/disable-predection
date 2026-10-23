@@ -11,6 +11,11 @@ const HealthRisk = () => {
   const [error, setError] = useState('');
 
   const fetchScoreData = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLoadingInitial(false);
+      return;
+    }
     try {
       setLoadingInitial(true);
       const [latest, hist] = await Promise.all([
@@ -20,7 +25,7 @@ const HealthRisk = () => {
       setCurrentScore(latest);
       setHistory(hist || []);
     } catch (err) {
-      console.error('Failed to load health risk data:', err);
+      console.warn('Could not load health risk data:', err);
     } finally {
       setLoadingInitial(false);
     }
@@ -155,7 +160,7 @@ const HealthRisk = () => {
                     width: 170,
                     height: 170,
                     borderRadius: '50%',
-                    background: `conic-gradient(${currentStyles.color} ${currentScore.score * 3.6}deg, rgba(30, 45, 74, 0.6) 0deg)`,
+                    background: `conic-gradient(${currentStyles.color} ${currentScore.score * 3.6}deg, #e2e8f0 0deg)`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -211,16 +216,16 @@ const HealthRisk = () => {
                 style={{
                   textAlign: 'center',
                   padding: '3rem 1rem',
-                  color: 'var(--text-muted)',
-                  backgroundColor: 'rgba(15, 23, 42, 0.4)',
+                  color: '#475569',
+                  backgroundColor: '#f8fafc',
                   borderRadius: 'var(--radius-md)',
-                  border: '1px dashed var(--border-color)',
+                  border: '1px dashed #cbd5e1',
                   marginBottom: '1rem',
                 }}
               >
-                <TrendingUp size={44} style={{ margin: '0 auto 1rem', color: 'var(--text-muted)' }} />
-                <p style={{ fontWeight: 500 }}>Not calculated yet</p>
-                <span style={{ fontSize: '0.85rem' }}>Click below to generate your composite risk score.</span>
+                <TrendingUp size={44} style={{ margin: '0 auto 1rem', color: '#2563eb' }} />
+                <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>Not calculated yet</p>
+                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Click below to generate your composite risk score.</span>
               </div>
             )}
           </div>
@@ -238,7 +243,7 @@ const HealthRisk = () => {
 
         {/* Contributing Factors Breakdown Card */}
         <div className="card">
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: 'var(--text-main)' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: '#0f172a' }}>
             Main Contributing Factors
           </h2>
 
@@ -250,18 +255,18 @@ const HealthRisk = () => {
                   style={{
                     padding: '0.85rem 1rem',
                     borderRadius: 'var(--radius-sm)',
-                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-                    border: '1px solid var(--border-color)',
+                    backgroundColor: '#f8fafc',
+                    border: '1px solid #e2e8f0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}
                 >
                   <div>
-                    <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)', display: 'block' }}>
+                    <strong style={{ fontSize: '0.9rem', color: '#0f172a', display: 'block' }}>
                       {item.factor}
                     </strong>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
                       {item.detail}
                     </span>
                   </div>
@@ -269,8 +274,8 @@ const HealthRisk = () => {
                     style={{
                       fontSize: '0.9rem',
                       fontWeight: 700,
-                      color: item.points > 0 ? 'var(--accent-amber)' : 'var(--primary-500)',
-                      backgroundColor: 'rgba(30, 45, 74, 0.6)',
+                      color: item.points > 0 ? '#b45309' : '#2563eb',
+                      backgroundColor: item.points > 0 ? '#fef3c7' : '#dbeafe',
                       padding: '0.25rem 0.6rem',
                       borderRadius: 6,
                       minWidth: 55,
@@ -283,7 +288,7 @@ const HealthRisk = () => {
               ))}
             </div>
           ) : (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', padding: '2rem 0', textAlign: 'center' }}>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', padding: '2rem 0', textAlign: 'center' }}>
               Contributing factor breakdown will appear here after calculation.
             </p>
           )}
@@ -294,18 +299,18 @@ const HealthRisk = () => {
               marginTop: '1.5rem',
               padding: '0.85rem 1rem',
               borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(15, 23, 42, 0.7)',
-              border: '1px solid var(--border-color)',
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fde68a',
               fontSize: '0.8rem',
-              color: 'var(--text-muted)',
+              color: '#92400e',
               display: 'flex',
               gap: '0.65rem',
               alignItems: 'flex-start',
             }}
           >
-            <ShieldAlert size={18} style={{ minWidth: 18, color: 'var(--accent-amber)', marginTop: 2 }} />
+            <ShieldAlert size={18} style={{ minWidth: 18, color: '#d97706', marginTop: 2 }} />
             <span>
-              <strong>Safety Disclaimer:</strong> This score is an informational estimate and is not a medical diagnosis or clinically validated risk assessment. Please consult a qualified healthcare professional for proper medical evaluation.
+              <strong style={{ color: '#78350f' }}>Safety Disclaimer:</strong> This score is an informational estimate and is not a medical diagnosis or clinically validated risk assessment. Please consult a qualified healthcare professional for proper medical evaluation.
             </span>
           </div>
         </div>

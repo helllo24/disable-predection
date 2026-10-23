@@ -11,7 +11,8 @@ const EmptyStateCard = ({ title, message, icon: Icon }) => {
         justifyContent: 'center',
         padding: '2.5rem 1.5rem',
         textAlign: 'center',
-        background: 'rgba(19, 28, 46, 0.5)',
+        backgroundColor: '#f8fafc',
+        borderColor: '#cbd5e1',
         borderStyle: 'dashed',
       }}
     >
@@ -21,21 +22,21 @@ const EmptyStateCard = ({ title, message, icon: Icon }) => {
             width: 48,
             height: 48,
             borderRadius: '50%',
-            backgroundColor: 'rgba(30, 45, 74, 0.5)',
+            backgroundColor: '#e0f2fe',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--text-muted)',
+            color: '#0284c7',
             marginBottom: '0.75rem',
           }}
         >
           <Icon size={24} />
         </div>
       )}
-      <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-main)', marginBottom: '0.25rem' }}>
+      <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.25rem' }}>
         {title}
       </h4>
-      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', maxWidth: 360 }}>
+      <p style={{ fontSize: '0.85rem', color: '#64748b', maxWidth: 360 }}>
         {message}
       </p>
     </div>

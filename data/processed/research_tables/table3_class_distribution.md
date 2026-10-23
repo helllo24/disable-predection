@@ -1,0 +1,6 @@
+| Subsample | Total (N) | Non-Diabetes (n) | Non-Diabetes (%) | Diabetes (n) | Diabetes (%) |
+| --- | --- | --- | --- | --- | --- |
+| Full Cohort | 100015 | 91676 | 91.66% | 8339 | 8.34% |
+| Training Set (70%) | 70000 | 64164 | 91.66% | 5836 | 8.34% |
+| Validation Set (10%) | 15000 | 13749 | 91.66% | 1251 | 8.34% |
+| Holdout Test Set (20%) | 15000 | 13750 | 91.67% | 1250 | 8.33% |

@@ -1,0 +1,29 @@
+{
+  "status": "EXTERNAL_VALIDATION_PENDING",
+  "message": "External validation pending verified independent dataset.",
+  "unlinked_legacy_synthetic_notice": "The 1,168-row synthetic dataset previously in this project was archived during provenance audit. Genuine external evaluation requires placing an authentic dataset at data/external/mendeley_diabetes_real.csv.",
+  "internal_test_baseline": {
+    "model_name": "HistGradientBoosting",
+    "dataset_name": "Healthcare EHR 100K Test Set",
+    "n_test_records": 15000,
+    "roc_auc": 0.9984,
+    "pr_auc": 0.9921,
+    "sensitivity_recall": 0.9816,
+    "specificity": 0.9959,
+    "brier_score": 0.0034
+  },
+  "expected_external_schema": {
+    "required_features": [
+      "gender",
+      "age",
+      "hypertension",
+      "heart_disease",
+      "smoking_history",
+      "bmi",
+      "HbA1c_level",
+      "blood_glucose_level"
+    ],
+    "target": "diabetes (0: Non-Diabetic, 1: Diabetic)",
+    "doi_reference": "10.17632/nxnty5g7y6.2 (Mendeley Data, Rashid 2021)"
+  }
+}

@@ -1,0 +1,10 @@
+Feature,Data Type,Role,Domain / Values,Units,"Missing (n, %)"
+gender,Categorical (String),Predictor,"Female, Male, Other",N/A,0 (0.00%)
+age,Continuous (Float),Predictor,0.1 - 80.0,Years,0 (0.00%)
+hypertension,Binary (Int),Predictor,"0 (No), 1 (Yes)",N/A,0 (0.00%)
+heart_disease,Binary (Int),Predictor,"0 (No), 1 (Yes)",N/A,0 (0.00%)
+smoking_history,Categorical (String),Predictor,"never, no info, current, former, ever, not current",N/A,0 (0.00%)
+bmi,Continuous (Float),Predictor,10.01 - 64.15,kg/m²,0 (0.00%)
+HbA1c_level,Continuous (Float),Predictor,3.5 - 9.0,%,0 (0.00%)
+blood_glucose_level,Continuous (Int),Predictor,80 - 300,mg/dL,0 (0.00%)
+diabetes,Binary (Int),Target Variable,"0 (Non-Diabetes), 1 (Diabetes)",N/A,0 (0.00%)

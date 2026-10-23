@@ -1,11 +1,18 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  import.meta.env.VITE_API_URL ||
+  'http://localhost:8000'
+).replace(/\/+$/, '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
+    'X-DevTunnel-Skip-AntiPhishing-Page': 'true',
+    'ngrok-skip-browser-warning': 'true',
   },
 });
 
@@ -28,7 +35,11 @@ api.interceptors.response.use(
     let customError = 'An unexpected error occurred. Please try again.';
     
     if (error.response) {
-      if (error.response.data && error.response.data.detail) {
+      if (error.response.status === 401) {
+        customError = 'Session expired or invalid login. Please log in again.';
+      } else if (error.response.status === 403) {
+        customError = 'Access denied.';
+      } else if (error.response.data && error.response.data.detail) {
         if (typeof error.response.data.detail === 'string') {
           customError = error.response.data.detail;
         } else if (Array.isArray(error.response.data.detail)) {
@@ -36,7 +47,7 @@ api.interceptors.response.use(
         }
       }
     } else if (error.request) {
-      customError = 'Unable to connect to backend server. Please check your connection.';
+      customError = 'Unable to connect to the backend server. Please verify that the backend service is running and the API configuration is correct.';
     }
     
     return Promise.reject(new Error(customError));
@@ -66,6 +77,11 @@ export const getLatestBMI = async () => {
 };
 
 // Diabetes ML Prediction Service Helpers
+export const predictDiabetesProduction = async (data) => {
+  const response = await api.post('/api/diabetes/predict', data);
+  return response.data;
+};
+
 export const predictDiabetes = async (data) => {
   const response = await api.post('/api/predictions/diabetes', data);
   return response.data;
@@ -265,6 +281,11 @@ export const getAdminAppointments = async () => {
 };
 
 // Research & External Validation Service Helpers
+export const getResearchDashboardData = async () => {
+  const response = await api.get('/api/v1/research/dashboard');
+  return response.data;
+};
+
 export const getExternalValidationSummary = async () => {
   const response = await api.get('/api/v1/research/external-validation');
   return response.data;

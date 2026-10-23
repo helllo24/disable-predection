@@ -382,20 +382,20 @@ const DiabetesComplication = () => {
             {/* Right: Latest Assessment Overview */}
             <div>
               {latestResult ? (
-                <div className="card" style={{ padding: '1.5rem', background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)' }}>
+                <div className="card" style={{ padding: '1.5rem', background: '#ffffff', border: '1px solid #cbd5e1' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                     <div>
-                      <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.5px' }}>
+                      <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px', fontWeight: 700 }}>
                         Latest Risk Assessment
                       </span>
-                      <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0.25rem 0 0 0', color: 'var(--text-primary)' }}>
+                      <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0.25rem 0 0 0', color: '#0f172a' }}>
                         {latestResult.overall_risk_summary}
                       </h2>
                     </div>
                     {getRiskBadge(latestResult.overall_risk_summary)}
                   </div>
 
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '1.5rem' }}>
                     Generated on {new Date(latestResult.created_at).toLocaleString()}
                   </div>
 
@@ -403,90 +403,90 @@ const DiabetesComplication = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     {/* ❤️ Heart Card */}
                     <div style={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)',
+                      backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
                       borderRadius: '10px', padding: '1rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <Heart size={18} style={{ color: '#ef4444' }} />
-                        <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>❤️ Heart (Cardio)</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0f172a' }}>❤️ Heart (Cardio)</span>
                       </div>
                       <div style={{ marginBottom: '0.5rem' }}>{getRiskBadge(latestResult.heart_risk)}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                         Probability: {(latestResult.heart_probability * 100).toFixed(1)}%
                       </div>
                     </div>
 
                     {/* 🫘 Kidney Card */}
                     <div style={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)',
+                      backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
                       borderRadius: '10px', padding: '1rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <Activity size={18} style={{ color: '#3b82f6' }} />
-                        <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>🫘 Kidney (Nephro)</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0f172a' }}>🫘 Kidney (Nephro)</span>
                       </div>
                       <div style={{ marginBottom: '0.5rem' }}>{getRiskBadge(latestResult.kidney_risk)}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                         Probability: {(latestResult.kidney_probability * 100).toFixed(1)}%
                       </div>
                     </div>
 
                     {/* 🧠 Nerve Card */}
                     <div style={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)',
+                      backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
                       borderRadius: '10px', padding: '1rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <Brain size={18} style={{ color: '#a855f7' }} />
-                        <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>🧠 Nerve (Neuro)</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0f172a' }}>🧠 Nerve (Neuro)</span>
                       </div>
                       <div style={{ marginBottom: '0.5rem' }}>{getRiskBadge(latestResult.neuropathy_risk)}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                         Probability: {(latestResult.neuropathy_probability * 100).toFixed(1)}%
                       </div>
                     </div>
 
                     {/* 👁️ Eye Card */}
                     <div style={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)',
+                      backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
                       borderRadius: '10px', padding: '1rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <Eye size={18} style={{ color: '#06b6d4' }} />
-                        <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>👁️ Eye (Retino)</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0f172a' }}>👁️ Eye (Retino)</span>
                       </div>
                       <div style={{ marginBottom: '0.5rem' }}>{getRiskBadge(latestResult.retinopathy_risk)}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                         Probability: {(latestResult.retinopathy_probability * 100).toFixed(1)}%
                       </div>
                     </div>
 
                     {/* 🦶 Foot Card */}
                     <div style={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)',
+                      backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
                       borderRadius: '10px', padding: '1rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <Footprints size={18} style={{ color: '#f59e0b' }} />
-                        <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>🦶 Foot Ulcer</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0f172a' }}>🦶 Foot Ulcer</span>
                       </div>
                       <div style={{ marginBottom: '0.5rem' }}>{getRiskBadge(latestResult.foot_risk)}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                         Probability: {(latestResult.foot_probability * 100).toFixed(1)}%
                       </div>
                     </div>
 
                     {/* 🩸 Vascular Card */}
                     <div style={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)',
+                      backgroundColor: '#f8fafc', border: '1px solid #e2e8f0',
                       borderRadius: '10px', padding: '1rem'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                         <TrendingUp size={18} style={{ color: '#ec4899' }} />
-                        <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>🩸 Vascular</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0f172a' }}>🩸 Vascular</span>
                       </div>
                       <div style={{ marginBottom: '0.5rem' }}>{getRiskBadge(latestResult.vascular_risk)}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                         Probability: {(latestResult.vascular_probability * 100).toFixed(1)}%
                       </div>
                     </div>

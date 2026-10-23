@@ -18,6 +18,7 @@ import MedicineReminders from './pages/MedicineReminders';
 import DoctorAppointments from './pages/DoctorAppointments';
 import AdminDashboard from './pages/AdminDashboard';
 import ResearchValidation from './pages/ResearchValidation';
+import Home from './pages/Home';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
 
           {/* Patient Protected Routes */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<Home />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/research" element={<ResearchValidation />} />
             <Route path="/health-risk" element={<HealthRisk />} />

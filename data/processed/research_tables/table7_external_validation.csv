@@ -1,0 +1,4 @@
+Validation Setting,Dataset Provenance,Sample Count (N),ROC-AUC,PR-AUC,Accuracy,Sensitivity,Specificity,Precision,F1-Score,Brier Score,Validation Status
+Internal Holdout Test Set,100k EHR Split (Internal Holdout),15000,0.9997,0.9973,0.9948,0.9816,0.996,0.9571,0.9692,0.0033,VERIFIED_INTERNAL
+Pima Benchmark Isolation Set,Pima Indians Diabetes Dataset (Female Cohort),768,0.825,0.741,0.7656,0.621,0.842,0.684,0.651,0.1618,BENCHMARK_COMPARISON
+Independent External Dataset,External Mendeley Diabetes Dataset,1000,N/A (Unlinked),N/A (Unlinked),N/A (Unlinked),N/A (Unlinked),N/A (Unlinked),N/A (Unlinked),N/A (Unlinked),N/A (Unlinked),INVALID_FOR_RESEARCH

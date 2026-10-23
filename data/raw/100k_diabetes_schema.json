@@ -1,0 +1,33 @@
+{
+  "dataset_name": "Healthcare EHR 100K Diabetes Prediction Dataset",
+  "expected_relative_path": "data/raw/diabetes_prediction_100k.csv",
+  "source": "Kaggle (iammustafatz/diabetes-prediction-dataset) / Anonymized Clinical EHR",
+  "total_records": 100000,
+  "required_columns": [
+    "gender",
+    "age",
+    "hypertension",
+    "heart_disease",
+    "smoking_history",
+    "bmi",
+    "HbA1c_level",
+    "blood_glucose_level",
+    "diabetes"
+  ],
+  "column_types": {
+    "gender": "string (Female, Male, Other)",
+    "age": "float (0.08 - 80.0)",
+    "hypertension": "int (0: No, 1: Yes)",
+    "heart_disease": "int (0: No, 1: Yes)",
+    "smoking_history": "string (never, current, former, ever, not current, No Info)",
+    "bmi": "float (10.01 - 95.69)",
+    "HbA1c_level": "float (3.5 - 9.0)",
+    "blood_glucose_level": "int (80 - 300)",
+    "diabetes": "int (0: Non-Diabetic, 1: Diabetic)"
+  },
+  "prevalence": {
+    "non_diabetic": 91500,
+    "diabetic": 8500,
+    "diabetic_pct": 8.5
+  }
+}

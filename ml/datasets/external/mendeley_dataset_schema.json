@@ -1,0 +1,29 @@
+{
+  "dataset_name": "Mendeley Diabetes Dataset",
+  "expected_relative_path": "ml/datasets/external/mendeley_diabetes_real.csv",
+  "doi": "10.17632/nxnty5g7y6.2",
+  "required_columns": [
+    "Pregnancies",
+    "Glucose",
+    "BloodPressure",
+    "SkinThickness",
+    "Insulin",
+    "BMI",
+    "DiabetesPedigreeFunction",
+    "Age",
+    "Sex",
+    "Outcome"
+  ],
+  "feature_descriptions": {
+    "Pregnancies": "Integer count of pregnancies (0 for males)",
+    "Glucose": "Plasma glucose concentration (mg/dL)",
+    "BloodPressure": "Diastolic blood pressure (mmHg)",
+    "SkinThickness": "Triceps skin fold thickness (mm)",
+    "Insulin": "2-Hour serum insulin (mu U/ml)",
+    "BMI": "Body Mass Index (weight in kg/(height in m)^2)",
+    "DiabetesPedigreeFunction": "Diabetes pedigree function ratio",
+    "Age": "Patient age in years (21-81)",
+    "Sex": "Demographic sex (0: Female, 1: Male)",
+    "Outcome": "Binary label (0: Non-diabetic, 1: Diabetic)"
+  }
+}

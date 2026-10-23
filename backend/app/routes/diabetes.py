@@ -1,24 +1,89 @@
+import logging
 from typing import List, Optional
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 from app.models.user import User
 from app.models.diabetes import DiabetesPrediction
-from app.schemas.diabetes import DiabetesPredictionRequest, DiabetesPredictionResponse
+from app.schemas.diabetes import (
+    DiabetesClinicalFeaturesRequest,
+    DiabetesPredictResponse,
+    DiabetesPredictionRequest,
+    DiabetesPredictionResponse
+)
 from app.services.auth_service import get_current_user
 from app.services.diabetes_ml_service import diabetes_ml_service
 
+logger = logging.getLogger(__name__)
+
+# Primary router for legacy predictions history/latest
 router = APIRouter(prefix="/api/predictions/diabetes", tags=["Diabetes Risk Prediction ML"])
 
+# Dedicated production diabetes router for POST /api/diabetes/predict
+dedicated_router = APIRouter(prefix="/api/diabetes", tags=["Production Diabetes Risk ML Pipeline"])
+
+
+@dedicated_router.post(
+    "/predict",
+    response_model=DiabetesPredictResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Predict Diabetes Risk via Production Calibrated ML Pipeline"
+)
+def predict_diabetes_risk_production(
+    data: DiabetesClinicalFeaturesRequest
+):
+    """
+    Production Diabetes Risk Prediction Endpoint:
+    1. Validates patient clinical feature schema and ranges.
+    2. Executes fitted preprocessing pipeline (`preprocessor.joblib`).
+    3. Runs final trained model and Isotonic probability calibration (`calibrated_model.joblib`).
+    4. Evaluates risk using configured screening decision threshold (`0.30`).
+    5. Computes individual SHAP feature explanations.
+    """
+    logger.info("Received diabetes prediction request for patient age=%.1f, HbA1c=%.2f, glucose=%.1f",
+                data.age, data.HbA1c_level, data.blood_glucose_level)
+
+    try:
+        input_dict = data.model_dump()
+        
+        # Execute production ML pipeline
+        ml_result = diabetes_ml_service.predict(input_dict)
+
+        logger.info("Successfully calculated risk probability=%.4f, category=%s",
+                    ml_result["probability"], ml_result.get("risk_category", ml_result["risk"]))
+
+        return {
+            "prediction": ml_result["prediction"],
+            "probability": ml_result["probability"],
+            "risk_category": ml_result.get("risk_category", ml_result["risk"]),
+            "threshold": ml_result.get("threshold", 0.30),
+            "model_version": ml_result.get("model_version", "1.0.0"),
+            "top_contributing_features": ml_result.get("top_contributing_features", []),
+            "disclaimer": ml_result.get("disclaimer", "This model outputs an estimated risk probability for clinical decision-support and does NOT provide an automated medical diagnosis.")
+        }
+    except ValueError as ve:
+        logger.warning("Validation error during prediction: %s", str(ve))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Clinical feature validation failed: {str(ve)}"
+        )
+    except Exception as e:
+        logger.error("Internal ML prediction error: %s", str(e), exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while evaluating the diabetes risk prediction model. Please try again later."
+        )
+
+
 @router.post("", response_model=DiabetesPredictionResponse, status_code=status.HTTP_201_CREATED)
-def predict_diabetes_risk(
+def predict_diabetes_risk_legacy(
     data: DiabetesPredictionRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Accepts patient physiological metrics, runs trained ML inference (XGBoost/RF),
+    Accepts patient physiological metrics, runs trained ML inference,
     persists history for the patient, and returns predicted risk score and probability.
     """
     input_dict = data.model_dump()
@@ -64,6 +129,7 @@ def predict_diabetes_risk(
         "created_at": db_record.created_at
     }
 
+
 @router.get("/history", response_model=List[DiabetesPredictionResponse])
 def get_diabetes_prediction_history(
     current_user: User = Depends(get_current_user),
@@ -96,6 +162,7 @@ def get_diabetes_prediction_history(
         for r in records
     ]
 
+
 @router.get("/latest", response_model=Optional[DiabetesPredictionResponse])
 def get_latest_diabetes_prediction(
     current_user: User = Depends(get_current_user),
@@ -127,3 +194,4 @@ def get_latest_diabetes_prediction(
         "age": record.age,
         "created_at": record.created_at
     }
+

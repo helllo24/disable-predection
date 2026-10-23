@@ -9,6 +9,7 @@ from app.routes import (
     auth_router,
     bmi_router,
     diabetes_router,
+    dedicated_diabetes_router,
     disease_router,
     health_risk_router,
     diet_router,
@@ -37,14 +38,29 @@ app = FastAPI(
     description="FastAPI Backend for MCA Project: Diabetes prediction using machine learning (Multi-Dataset External Validation & Subgroup Fairness)"
 )
 
-# Configure CORS dynamically to allow any local frontend port (5173, 5174) and devtunnels
-origins_raw = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175")
-origins = [origin.strip() for origin in origins_raw.split(",") if origin.strip()]
+origins = [
+    # Local development - all common Vite ports
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://localhost:5176",
+    "http://localhost:5177",
+    "http://localhost:5178",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:8080",
+    # 127.0.0.1 variants
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8080",
+]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https?://.*",
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,6 +71,7 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(bmi_router)
 app.include_router(diabetes_router)
+app.include_router(dedicated_diabetes_router)
 app.include_router(disease_router)
 app.include_router(health_risk_router)
 app.include_router(diet_router)

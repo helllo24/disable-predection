@@ -1,0 +1,246 @@
+{
+  "model_name": "HistGradientBoosting",
+  "sample_size_evaluated": 1000,
+  "base_expected_value": -8.578,
+  "global_feature_rankings": [
+    {
+      "rank": 1,
+      "feature": "HbA1c_level",
+      "mean_abs_shap": 2.6765
+    },
+    {
+      "rank": 2,
+      "feature": "blood_glucose_level",
+      "mean_abs_shap": 0.3289
+    },
+    {
+      "rank": 3,
+      "feature": "age",
+      "mean_abs_shap": 0.1369
+    },
+    {
+      "rank": 4,
+      "feature": "bmi",
+      "mean_abs_shap": 0.0788
+    },
+    {
+      "rank": 5,
+      "feature": "hypertension",
+      "mean_abs_shap": 0.0117
+    },
+    {
+      "rank": 6,
+      "feature": "heart_disease",
+      "mean_abs_shap": 0.0069
+    },
+    {
+      "rank": 7,
+      "feature": "smoking_history_current",
+      "mean_abs_shap": 0.0028
+    },
+    {
+      "rank": 8,
+      "feature": "smoking_history_No Info",
+      "mean_abs_shap": 0.002
+    },
+    {
+      "rank": 9,
+      "feature": "smoking_history_never",
+      "mean_abs_shap": 0.0013
+    },
+    {
+      "rank": 10,
+      "feature": "gender_Female",
+      "mean_abs_shap": 0.0011
+    },
+    {
+      "rank": 11,
+      "feature": "smoking_history_ever",
+      "mean_abs_shap": 0.0011
+    },
+    {
+      "rank": 12,
+      "feature": "smoking_history_not current",
+      "mean_abs_shap": 0.0009
+    },
+    {
+      "rank": 13,
+      "feature": "gender_Male",
+      "mean_abs_shap": 0.0008
+    },
+    {
+      "rank": 14,
+      "feature": "smoking_history_former",
+      "mean_abs_shap": 0.0004
+    },
+    {
+      "rank": 15,
+      "feature": "gender_Other",
+      "mean_abs_shap": 0.0
+    }
+  ],
+  "sample_individual_explanation": {
+    "patient_index": 4,
+    "predicted_risk_probability": 0.9997,
+    "base_expected_value": -8.578,
+    "top_positive_contributors": [
+      {
+        "feature": "HbA1c_level",
+        "actual_value": 2.9321,
+        "shap_contribution": 15.2072,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 91.85
+      },
+      {
+        "feature": "blood_glucose_level",
+        "actual_value": 2.374,
+        "shap_contribution": 1.1728,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 7.08
+      },
+      {
+        "feature": "bmi",
+        "actual_value": 2.4777,
+        "shap_contribution": 0.0865,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 0.52
+      }
+    ],
+    "top_negative_contributors": [
+      {
+        "feature": "smoking_history_not current",
+        "actual_value": 1.0,
+        "shap_contribution": -0.0031,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.02
+      },
+      {
+        "feature": "hypertension",
+        "actual_value": 0.0,
+        "shap_contribution": -0.003,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.02
+      },
+      {
+        "feature": "smoking_history_No Info",
+        "actual_value": 0.0,
+        "shap_contribution": -0.0027,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.02
+      }
+    ],
+    "all_feature_contributions": [
+      {
+        "feature": "HbA1c_level",
+        "actual_value": 2.9321,
+        "shap_contribution": 15.2072,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 91.85
+      },
+      {
+        "feature": "blood_glucose_level",
+        "actual_value": 2.374,
+        "shap_contribution": 1.1728,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 7.08
+      },
+      {
+        "feature": "bmi",
+        "actual_value": 2.4777,
+        "shap_contribution": 0.0865,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 0.52
+      },
+      {
+        "feature": "age",
+        "actual_value": 1.2097,
+        "shap_contribution": 0.0503,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 0.3
+      },
+      {
+        "feature": "heart_disease",
+        "actual_value": 1.0,
+        "shap_contribution": 0.0302,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 0.18
+      },
+      {
+        "feature": "smoking_history_not current",
+        "actual_value": 1.0,
+        "shap_contribution": -0.0031,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.02
+      },
+      {
+        "feature": "hypertension",
+        "actual_value": 0.0,
+        "shap_contribution": -0.003,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.02
+      },
+      {
+        "feature": "smoking_history_No Info",
+        "actual_value": 0.0,
+        "shap_contribution": -0.0027,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.02
+      },
+      {
+        "feature": "smoking_history_current",
+        "actual_value": 0.0,
+        "shap_contribution": 0.0005,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 0.0
+      },
+      {
+        "feature": "smoking_history_never",
+        "actual_value": 0.0,
+        "shap_contribution": 0.0005,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 0.0
+      },
+      {
+        "feature": "smoking_history_former",
+        "actual_value": 0.0,
+        "shap_contribution": 0.0002,
+        "direction": "increased risk contribution",
+        "relative_contribution_pct": 0.0
+      },
+      {
+        "feature": "gender_Female",
+        "actual_value": 0.0,
+        "shap_contribution": -0.0001,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.0
+      },
+      {
+        "feature": "gender_Male",
+        "actual_value": 1.0,
+        "shap_contribution": -0.0001,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.0
+      },
+      {
+        "feature": "smoking_history_ever",
+        "actual_value": 0.0,
+        "shap_contribution": -0.0001,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.0
+      },
+      {
+        "feature": "gender_Other",
+        "actual_value": 0.0,
+        "shap_contribution": 0.0,
+        "direction": "decreased risk contribution",
+        "relative_contribution_pct": 0.0
+      }
+    ],
+    "non_technical_explanation": "The model estimated a diabetes risk probability of 100.0%. Features such as HbA1c_level, blood_glucose_level, bmi contributed positively to increasing the risk score, while features like smoking_history_not current, hypertension, smoking_history_No Info contributed to lowering the risk score. Note: These contributions represent feature weights in the predictive model and do NOT imply direct medical causation."
+  },
+  "plots": {
+    "summary_plot": "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\smart-healthcare-assistant\\data\\processed\\shap_summary_plot.png",
+    "bar_plot": "C:\\Users\\Admin\\.gemini\\antigravity\\scratch\\smart-healthcare-assistant\\data\\processed\\shap_bar_plot.png"
+  },
+  "disclaimer": "SHAP contributions quantify mathematical feature importance in the predictive model and do NOT describe biological or medical causation."
+}

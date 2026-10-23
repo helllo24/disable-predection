@@ -193,25 +193,25 @@ const ExerciseRecommendation = () => {
               marginTop: '1.5rem',
               padding: '0.85rem 1rem',
               borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(15, 23, 42, 0.7)',
-              border: '1px solid var(--border-color)',
+              backgroundColor: '#fef3c7',
+              border: '1px solid #fde68a',
               fontSize: '0.8rem',
-              color: 'var(--text-muted)',
+              color: '#92400e',
               display: 'flex',
               gap: '0.65rem',
               alignItems: 'flex-start',
             }}
           >
-            <ShieldAlert size={18} style={{ minWidth: 18, color: 'var(--accent-amber)', marginTop: 2 }} />
+            <ShieldAlert size={18} style={{ minWidth: 18, color: '#d97706', marginTop: 2 }} />
             <span>
-              <strong>Mandated Safety Note:</strong> Consult a healthcare professional before starting a new exercise program, especially if you have a medical condition.
+              <strong style={{ color: '#78350f' }}>Mandated Safety Note:</strong> Consult a healthcare professional before starting a new exercise program, especially if you have a medical condition.
             </span>
           </div>
         </div>
 
         {/* Recommendation Results Display Card */}
         <div className="card">
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: 'var(--text-main)' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.25rem', color: '#0f172a' }}>
             Exercise Guidance Plan Output
           </h2>
 
@@ -219,7 +219,7 @@ const ExerciseRecommendation = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {/* Recommended Activities */}
               <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5, display: 'block', marginBottom: '0.5rem', fontWeight: 700 }}>
                   Recommended Physical Activities:
                 </span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
@@ -228,11 +228,11 @@ const ExerciseRecommendation = () => {
                       key={`act-${idx}`}
                       style={{
                         fontSize: '0.8rem',
-                        padding: '0.3rem 0.65rem',
+                        padding: '0.35rem 0.75rem',
                         borderRadius: 'var(--radius-sm)',
-                        backgroundColor: 'rgba(20, 184, 166, 0.15)',
-                        color: 'var(--primary-500)',
-                        border: '1px solid rgba(20, 184, 166, 0.3)',
+                        backgroundColor: '#e0f2fe',
+                        color: '#0284c7',
+                        border: '1px solid #7dd3fc',
                         fontWeight: 600,
                       }}
                     >
@@ -244,35 +244,35 @@ const ExerciseRecommendation = () => {
 
               {/* Prescription Guidance Metrics */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.75rem' }}>
-                <div style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
-                  <strong style={{ color: 'var(--primary-500)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                <div style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}>
+                  <strong style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
                     <Calendar size={16} /> Recommended Frequency:
                   </strong>
-                  <span style={{ color: 'var(--text-main)' }}>{recs.frequency_guidance}</span>
+                  <span style={{ color: '#0f172a' }}>{recs.frequency_guidance}</span>
                 </div>
 
-                <div style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
-                  <strong style={{ color: 'var(--primary-500)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                <div style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}>
+                  <strong style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
                     <Clock size={16} /> Target Duration:
                   </strong>
-                  <span style={{ color: 'var(--text-main)' }}>{recs.duration_guidance}</span>
+                  <span style={{ color: '#0f172a' }}>{recs.duration_guidance}</span>
                 </div>
 
-                <div style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
-                  <strong style={{ color: 'var(--primary-500)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
+                <div style={{ padding: '0.75rem 1rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}>
+                  <strong style={{ color: '#2563eb', display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.2rem' }}>
                     <Zap size={16} /> Target Intensity:
                   </strong>
-                  <span style={{ color: 'var(--text-main)' }}>{recs.intensity_guidance}</span>
+                  <span style={{ color: '#0f172a' }}>{recs.intensity_guidance}</span>
                 </div>
               </div>
 
               {/* Safety Guidelines List */}
               {recs.safety_notes && (
-                <div style={{ background: 'rgba(15, 23, 42, 0.5)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', fontSize: '0.8rem' }}>
-                  <span style={{ fontWeight: 600, color: 'var(--text-main)', display: 'block', marginBottom: '0.5rem' }}>
+                <div style={{ background: '#f8fafc', padding: '0.85rem 1rem', borderRadius: 'var(--radius-sm)', border: '1px solid #e2e8f0', fontSize: '0.8rem' }}>
+                  <span style={{ fontWeight: 600, color: '#0f172a', display: 'block', marginBottom: '0.5rem' }}>
                     Safety Guidelines & Warm-Up Notes:
                   </span>
-                  <ul style={{ paddingLeft: '1.2rem', margin: 0, color: 'var(--text-muted)' }}>
+                  <ul style={{ paddingLeft: '1.2rem', margin: 0, color: '#475569' }}>
                     {recs.safety_notes.map((note, i) => (
                       <li key={`note-${i}`} style={{ marginBottom: '0.25rem' }}>{note}</li>
                     ))}
@@ -285,14 +285,14 @@ const ExerciseRecommendation = () => {
               style={{
                 textAlign: 'center',
                 padding: '4rem 1rem',
-                color: 'var(--text-muted)',
-                backgroundColor: 'rgba(15, 23, 42, 0.4)',
+                color: '#475569',
+                backgroundColor: '#f8fafc',
                 borderRadius: 'var(--radius-md)',
-                border: '1px dashed var(--border-color)',
+                border: '1px dashed #cbd5e1',
               }}
             >
-              <Dumbbell size={44} style={{ margin: '0 auto 1rem', color: 'var(--text-muted)' }} />
-              <p>Select your fitness parameters on the left to generate personalized exercise guidance.</p>
+              <Dumbbell size={44} style={{ margin: '0 auto 1rem', color: '#2563eb' }} />
+              <p style={{ fontWeight: 600, fontSize: '0.95rem' }}>Select your fitness parameters on the left to generate personalized exercise guidance.</p>
             </div>
           )}
         </div>

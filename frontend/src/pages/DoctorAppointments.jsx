@@ -194,10 +194,10 @@ const DoctorAppointments = () => {
           marginBottom: '1.5rem',
           padding: '0.85rem 1.25rem',
           borderRadius: 'var(--radius-md)',
-          backgroundColor: 'rgba(15, 23, 42, 0.7)',
-          border: '1px solid var(--border-color)',
+          backgroundColor: '#fef3c7',
+          border: '1px solid #fde68a',
           fontSize: '0.85rem',
-          color: 'var(--text-muted)',
+          color: '#92400e',
           display: 'flex',
           gap: '0.75rem',
           alignItems: 'flex-start',
@@ -342,17 +342,17 @@ const DoctorAppointments = () => {
               style={{
                 textAlign: 'center',
                 padding: '3.5rem 1rem',
-                color: 'var(--text-muted)',
-                backgroundColor: 'rgba(15, 23, 42, 0.4)',
+                color: '#475569',
+                backgroundColor: '#f8fafc',
                 borderRadius: 'var(--radius-md)',
-                border: '1px dashed var(--border-color)',
+                border: '1px dashed #cbd5e1',
               }}
             >
-              <Calendar size={44} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-              <p style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--text-main)' }}>
+              <Calendar size={44} style={{ margin: '0 auto 1rem', color: '#2563eb' }} />
+              <p style={{ fontWeight: 600, fontSize: '1.1rem', color: '#0f172a' }}>
                 No upcoming appointments.
               </p>
-              <span style={{ fontSize: '0.85rem' }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
                 Browse our specialist doctors and book your consultation session.
               </span>
             </div>

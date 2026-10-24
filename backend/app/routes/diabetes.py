@@ -1,189 +1,341 @@
+
 import logging
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 from app.models.user import User
 from app.models.diabetes import DiabetesPrediction
-from app.models.diabetes_production import DiabetesProductionPrediction
 from app.schemas.diabetes import (
-    DiabetesClinicalFeaturesRequest,
     DiabetesPredictResponse,
     DiabetesPredictionRequest,
     DiabetesPredictionResponse,
-    DiabetesProductionHistoryItem
 )
 from app.services.auth_service import get_current_user
 from app.services.diabetes_ml_service import diabetes_ml_service
 
 logger = logging.getLogger(__name__)
 
-# Primary router for legacy predictions history/latest
-router = APIRouter(prefix="/api/predictions/diabetes", tags=["Diabetes Risk Prediction ML"])
+# Legacy PIMA prediction history and latest routes
+router = APIRouter(
+    prefix="/api/predictions/diabetes",
+    tags=["Diabetes Risk Prediction ML"],
+)
 
-# Dedicated production diabetes router for POST /api/diabetes/predict
-dedicated_router = APIRouter(prefix="/api/diabetes", tags=["Production Diabetes Risk ML Pipeline"])
+# Production PIMA prediction route
+dedicated_router = APIRouter(
+    prefix="/api/diabetes",
+    tags=["PIMA Diabetes Risk Prediction"],
+)
+
+
+def normalize_contributing_features(features):
+    """
+    Ensure each SHAP feature contains all fields required by the
+    DiabetesPredictResponse schema.
+
+    Expected input fields:
+      feature_name or feature
+      actual_value
+      shap_contribution
+
+    direction assumes a positive SHAP value increases the model output
+    being explained. Verify this against your model's positive class.
+    """
+    if not features:
+        return []
+
+    valid_features = []
+
+    for item in features:
+        if not isinstance(item, dict):
+            logger.warning("Skipping invalid SHAP feature: %r", item)
+            continue
+
+        feature_name = item.get("feature_name") or item.get("feature")
+
+        if not feature_name:
+            logger.warning("Skipping SHAP feature without a name: %r", item)
+            continue
+
+        try:
+            contribution = float(item.get("shap_contribution", 0.0))
+            actual_value = float(item.get("actual_value", 0.0))
+        except (TypeError, ValueError):
+            logger.warning("Skipping SHAP feature with invalid values: %r", item)
+            continue
+
+        direction = item.get("direction")
+
+        if direction not in ("increases risk", "decreases risk", "no effect"):
+            if contribution > 0:
+                direction = "increases risk"
+            elif contribution < 0:
+                direction = "decreases risk"
+            else:
+                direction = "no effect"
+
+        valid_features.append({
+            "feature_name": str(feature_name),
+            "feature": str(item.get("feature") or feature_name),
+            "actual_value": actual_value,
+            "shap_contribution": contribution,
+            "direction": direction,
+        })
+
+    # Percentage is based on the absolute SHAP contributions.
+    total_absolute_contribution = sum(
+        abs(item["shap_contribution"]) for item in valid_features
+    )
+
+    for item in valid_features:
+        if total_absolute_contribution > 0:
+            percentage = (
+                abs(item["shap_contribution"])
+                / total_absolute_contribution
+                * 100
+            )
+        else:
+            percentage = 0.0
+
+        item["relative_contribution_pct"] = round(percentage, 2)
+
+    valid_features.sort(
+        key=lambda item: abs(item["shap_contribution"]),
+        reverse=True,
+    )
+
+    return valid_features[:8]
 
 
 @dedicated_router.post(
     "/predict",
     response_model=DiabetesPredictResponse,
     status_code=status.HTTP_200_OK,
-    summary="Predict Diabetes Risk via Production Calibrated ML Pipeline"
+    summary="Predict Diabetes Risk using PIMA model",
 )
 def predict_diabetes_risk_production(
-    data: DiabetesClinicalFeaturesRequest,
+    data: DiabetesPredictionRequest,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    """
-    Production Diabetes Risk Prediction Endpoint:
-    1. Validates patient clinical feature schema and ranges.
-    2. Executes fitted preprocessing pipeline (`preprocessor.joblib`).
-    3. Runs final trained model and Isotonic probability calibration (`calibrated_model.joblib`).
-    4. Evaluates risk using configured screening decision threshold (`0.30`).
-    5. Computes individual SHAP feature explanations.
-    6. Requires JWT authentication and saves result to DB.
-    """
-    logger.info("Received diabetes prediction request for patient age=%.1f, HbA1c=%.2f, glucose=%.1f",
-                data.age, data.HbA1c_level, data.blood_glucose_level)
+    """Run the PIMA model, save the prediction, and return SHAP details."""
 
     try:
         input_dict = data.model_dump()
 
-        # Execute production ML pipeline
+        # Run existing ML service.
         ml_result = diabetes_ml_service.predict(input_dict)
 
-        logger.info("Successfully calculated risk probability=%.4f, category=%s",
-                    ml_result["probability"], ml_result.get("risk_category", ml_result["risk"]))
-
-        # Save prediction to DB
-        db_record = DiabetesProductionPrediction(
-            user_id=current_user.id,
-            gender=data.gender,
-            age=data.age,
-            hypertension=data.hypertension,
-            heart_disease=data.heart_disease,
-            smoking_history=data.smoking_history,
-            bmi=data.bmi,
-            HbA1c_level=data.HbA1c_level,
-            blood_glucose_level=data.blood_glucose_level,
-            prediction=ml_result["prediction"],
-            probability=ml_result["probability"],
-            risk_category=ml_result.get("risk_category", ml_result.get("risk", "Unknown")),
-            threshold=ml_result.get("threshold", 0.30),
-            model_version=ml_result.get("model_version", "1.0.0"),
+        # Fix the response validation issue by normalizing SHAP fields.
+        contributing_features = normalize_contributing_features(
+            ml_result.get("top_contributing_features", [])
         )
+
+        prediction = int(ml_result["prediction"])
+        probability = float(ml_result["probability"])
+        risk = ml_result.get("risk", ml_result.get("risk_category", "Unknown"))
+        risk_category = ml_result.get("risk_category", risk)
+        model_name = ml_result.get("model", ml_result.get("model_version", "unknown"))
+
+        # Save to the existing PIMA-compatible database table.
+        db_record = DiabetesPrediction(
+            user_id=current_user.id,
+            pregnancies=data.pregnancies,
+            glucose=data.glucose,
+            blood_pressure=data.blood_pressure,
+            skin_thickness=data.skin_thickness,
+            insulin=data.insulin,
+            bmi=data.bmi,
+            diabetes_pedigree_function=data.diabetes_pedigree_function,
+            age=data.age,
+            prediction=prediction,
+            risk=risk,
+            probability=probability,
+            model_name=model_name,
+        )
+
+        db.add(db_record)
+        db.commit()
+        db.refresh(db_record)
+
+        logger.info(
+            "PIMA prediction successful: probability=%.4f, risk=%s, features=%d",
+            probability,
+            risk_category,
+            len(contributing_features),
+        )
+
+        return {
+            "prediction": prediction,
+            "probability": probability,
+            "risk_category": risk_category,
+            "threshold": ml_result.get("threshold", 0.30),
+            "model_version": ml_result.get(
+                "model_version",
+                model_name,
+            ),
+            "top_contributing_features": contributing_features,
+            "disclaimer": ml_result.get(
+                "disclaimer",
+                "This model provides an estimated risk probability for "
+                "clinical decision support. It does not provide an "
+                "automated medical diagnosis.",
+            ),
+        }
+
+    except ValueError as exc:
+        db.rollback()
+        logger.warning("PIMA validation error: %s", str(exc))
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Clinical feature validation failed: {exc}",
+        ) from exc
+
+    except Exception as exc:
+        db.rollback()
+        logger.error(
+            "PIMA prediction failed: %s",
+            str(exc),
+            exc_info=True,
+        )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Diabetes prediction failed. Check backend logs.",
+        ) from exc
+
+
+@router.post(
+    "",
+    response_model=DiabetesPredictionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def predict_diabetes_risk_legacy(
+    data: DiabetesPredictionRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Run a PIMA prediction and save it to the user's history."""
+
+    try:
+        ml_result = diabetes_ml_service.predict(data.model_dump())
+
+        prediction = int(ml_result["prediction"])
+        probability = float(ml_result["probability"])
+        risk = ml_result.get("risk", ml_result.get("risk_category", "Unknown"))
+        model_name = ml_result.get("model", ml_result.get("model_version", "unknown"))
+
+        db_record = DiabetesPrediction(
+            user_id=current_user.id,
+            pregnancies=data.pregnancies,
+            glucose=data.glucose,
+            blood_pressure=data.blood_pressure,
+            skin_thickness=data.skin_thickness,
+            insulin=data.insulin,
+            bmi=data.bmi,
+            diabetes_pedigree_function=data.diabetes_pedigree_function,
+            age=data.age,
+            prediction=prediction,
+            risk=risk,
+            probability=probability,
+            model_name=model_name,
+        )
+
         db.add(db_record)
         db.commit()
         db.refresh(db_record)
 
         return {
-            "prediction": ml_result["prediction"],
-            "probability": ml_result["probability"],
-            "risk_category": ml_result.get("risk_category", ml_result["risk"]),
-            "threshold": ml_result.get("threshold", 0.30),
-            "model_version": ml_result.get("model_version", "1.0.0"),
-            "top_contributing_features": ml_result.get("top_contributing_features", []),
-            "disclaimer": ml_result.get("disclaimer", "This model outputs an estimated risk probability for clinical decision-support and does NOT provide an automated medical diagnosis.")
+            "id": db_record.id,
+            "prediction": db_record.prediction,
+            "risk": db_record.risk,
+            "probability": db_record.probability,
+            "model": db_record.model_name,
+            "pregnancies": db_record.pregnancies,
+            "glucose": db_record.glucose,
+            "blood_pressure": db_record.blood_pressure,
+            "skin_thickness": db_record.skin_thickness,
+            "insulin": db_record.insulin,
+            "bmi": db_record.bmi,
+            "diabetes_pedigree_function": db_record.diabetes_pedigree_function,
+            "age": db_record.age,
+            "created_at": db_record.created_at,
         }
-    except ValueError as ve:
-        logger.warning("Validation error during prediction: %s", str(ve))
+
+    except ValueError as exc:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Clinical feature validation failed: {str(ve)}"
-        )
-    except Exception as e:
-        logger.error("Internal ML prediction error: %s", str(e), exc_info=True)
+            detail=str(exc),
+        ) from exc
+
+    except Exception as exc:
+        db.rollback()
+        logger.error("Legacy PIMA prediction failed: %s", str(exc), exc_info=True)
+
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An error occurred while evaluating the diabetes risk prediction model. Please try again later."
-        )
+            detail="Prediction failed. Check backend logs.",
+        ) from exc
 
 
-@router.post("", response_model=DiabetesPredictionResponse, status_code=status.HTTP_201_CREATED)
-def predict_diabetes_risk_legacy(
-    data: DiabetesPredictionRequest,
+@router.get("/history")
+def get_diabetes_history(
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
 ):
-    """
-    Accepts patient physiological metrics, runs trained ML inference,
-    persists history for the patient, and returns predicted risk score and probability.
-    """
-    input_dict = data.model_dump()
-    
-    # Run ML prediction pipeline
-    ml_result = diabetes_ml_service.predict(input_dict)
+    """Return prediction history belonging only to the current user."""
 
-    # Save to database for current patient
-    db_record = DiabetesPrediction(
-        user_id=current_user.id,
-        pregnancies=data.pregnancies,
-        glucose=data.glucose,
-        blood_pressure=data.blood_pressure,
-        skin_thickness=data.skin_thickness,
-        insulin=data.insulin,
-        bmi=data.bmi,
-        diabetes_pedigree_function=data.diabetes_pedigree_function,
-        age=data.age,
-        prediction=ml_result["prediction"],
-        risk=ml_result["risk"],
-        probability=ml_result["probability"],
-        model_name=ml_result["model"]
-    )
-
-    db.add(db_record)
-    db.commit()
-    db.refresh(db_record)
-
-    return {
-        "id": db_record.id,
-        "prediction": db_record.prediction,
-        "risk": db_record.risk,
-        "probability": db_record.probability,
-        "model": db_record.model_name,
-        "pregnancies": db_record.pregnancies,
-        "glucose": db_record.glucose,
-        "blood_pressure": db_record.blood_pressure,
-        "skin_thickness": db_record.skin_thickness,
-        "insulin": db_record.insulin,
-        "bmi": db_record.bmi,
-        "diabetes_pedigree_function": db_record.diabetes_pedigree_function,
-        "age": db_record.age,
-        "created_at": db_record.created_at
-    }
-
-
-@router.get("/history", response_model=List[DiabetesProductionHistoryItem])
-def get_diabetes_prediction_history(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    """Returns the authenticated patient's production prediction history strictly isolated to their account."""
     records = (
-        db.query(DiabetesProductionPrediction)
-        .filter(DiabetesProductionPrediction.user_id == current_user.id)
-        .order_by(DiabetesProductionPrediction.id.desc())
+        db.query(DiabetesPrediction)
+        .filter(DiabetesPrediction.user_id == current_user.id)
+        .order_by(DiabetesPrediction.created_at.desc())
         .all()
     )
-    return records
+
+    return [
+        {
+            "id": record.id,
+            "prediction": record.prediction,
+            "risk": record.risk,
+            "probability": record.probability,
+            "model": record.model_name,
+            "pregnancies": record.pregnancies,
+            "glucose": record.glucose,
+            "blood_pressure": record.blood_pressure,
+            "skin_thickness": record.skin_thickness,
+            "insulin": record.insulin,
+            "bmi": record.bmi,
+            "diabetes_pedigree_function": record.diabetes_pedigree_function,
+            "age": record.age,
+            "created_at": record.created_at,
+        }
+        for record in records
+    ]
 
 
-@router.get("/latest", response_model=Optional[DiabetesPredictionResponse])
+@router.get(
+    "/latest",
+    response_model=Optional[DiabetesPredictionResponse],
+)
 def get_latest_diabetes_prediction(
+    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
 ):
-    """Returns the latest diabetes risk prediction record for the patient dashboard."""
+    """Return the latest PIMA prediction for the current user."""
+
     record = (
         db.query(DiabetesPrediction)
         .filter(DiabetesPrediction.user_id == current_user.id)
-        .order_by(DiabetesPrediction.id.desc())
+        .order_by(DiabetesPrediction.created_at.desc())
         .first()
     )
-    if not record:
+
+    if record is None:
         return None
 
     return {
@@ -200,6 +352,5 @@ def get_latest_diabetes_prediction(
         "bmi": record.bmi,
         "diabetes_pedigree_function": record.diabetes_pedigree_function,
         "age": record.age,
-        "created_at": record.created_at
+        "created_at": record.created_at,
     }
-

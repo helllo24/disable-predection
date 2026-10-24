@@ -1,3 +1,4 @@
+
 import os
 import sys
 import json
@@ -5,170 +6,509 @@ import joblib
 import numpy as np
 import pandas as pd
 
-# Add evaluation directory to sys.path
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(BASE_DIR, "ml", "evaluation"))
+
+# ---------------------------------------------------------
+# Project paths
+# ---------------------------------------------------------
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+)
+
+EVALUATION_DIR = os.path.join(BASE_DIR, "ml", "evaluation")
+
+if EVALUATION_DIR not in sys.path:
+    sys.path.insert(0, EVALUATION_DIR)
+
+# Keep this import if your project contains this module/class.
+# If it is genuinely missing, resolve that dependency separately.
 from research_evaluation_metrics import CalibratedProbabilityModel
 
-PACKAGE_DIR = os.path.join(BASE_DIR, "ml", "models", "production_package")
+
+PACKAGE_DIR = os.path.join(
+    BASE_DIR, "ml", "models", "production_package"
+)
 MANIFEST_PATH = os.path.join(PACKAGE_DIR, "model_manifest.json")
 PREPROCESSOR_PATH = os.path.join(PACKAGE_DIR, "preprocessor.joblib")
 MODEL_PATH = os.path.join(PACKAGE_DIR, "calibrated_model.joblib")
 
+
 class ProductionInferenceEngine:
     def __init__(self):
-        if not os.path.exists(MANIFEST_PATH) or not os.path.exists(MODEL_PATH) or not os.path.exists(PREPROCESSOR_PATH):
-            raise FileNotFoundError("Production package artifacts missing. Run ml/models/package_production_model.py first.")
+        required_files = [
+            MANIFEST_PATH,
+            MODEL_PATH,
+            PREPROCESSOR_PATH,
+        ]
 
-        with open(MANIFEST_PATH, "r") as f:
-            self.manifest = json.load(f)
+        missing_files = [
+            path for path in required_files
+            if not os.path.exists(path)
+        ]
+
+        if missing_files:
+            raise FileNotFoundError(
+                "Production package artifacts missing: "
+                + ", ".join(missing_files)
+            )
+
+        with open(MANIFEST_PATH, "r", encoding="utf-8") as file:
+            self.manifest = json.load(file)
 
         self.preprocessor = joblib.load(PREPROCESSOR_PATH)
         self.calibrated_model = joblib.load(MODEL_PATH)
+
         self.raw_feature_order = self.manifest["raw_feature_order"]
         self.schema = self.manifest["raw_feature_schema"]
-        self.threshold = self.manifest["selected_threshold"]
+        self.threshold = float(self.manifest["selected_threshold"])
+
+        if not 0.0 <= self.threshold <= 1.0:
+            raise ValueError(
+                f"Invalid selected threshold: {self.threshold}"
+            )
+
+        self._explainer = None
 
     def validate_input(self, patient_data):
         """
-        Enforces strict feature schema and ordering validation.
-        Prevents incorrect feature order or missing fields from silently producing predictions.
+        Validate raw patient features and enforce training-time order.
         """
         if isinstance(patient_data, dict):
             df_input = pd.DataFrame([patient_data])
         elif isinstance(patient_data, pd.DataFrame):
             df_input = patient_data.copy()
         else:
-            raise TypeError("Patient input must be a dict or pandas DataFrame.")
+            raise TypeError(
+                "Patient input must be a dict or pandas DataFrame."
+            )
 
-        # Check for missing required features
-        missing_features = [f for f in self.raw_feature_order if f not in df_input.columns]
+        if df_input.empty:
+            raise ValueError("Patient input cannot be empty.")
+
+        missing_features = [
+            feature for feature in self.raw_feature_order
+            if feature not in df_input.columns
+        ]
+
         if missing_features:
-            raise ValueError(f"Input validation error! Missing required features: {missing_features}")
+            raise ValueError(
+                "Input validation error! Missing required features: "
+                f"{missing_features}"
+            )
 
-        # Enforce exact raw feature column ordering
+        # This endpoint handles one patient at a time.
+        if len(df_input) != 1:
+            raise ValueError(
+                "Exactly one patient record must be supplied."
+            )
+
         df_ordered = df_input[self.raw_feature_order].copy()
 
-        # Validate feature types & value bounds
-        for feat in self.raw_feature_order:
-            feat_meta = self.schema[feat]
-            val = df_ordered[feat].iloc[0]
+        for feature in self.raw_feature_order:
+            metadata = self.schema[feature]
+            value = df_ordered[feature].iloc[0]
 
-            if feat_meta["type"] == "string" and "allowed_values" in feat_meta:
-                if val not in feat_meta["allowed_values"]:
-                    raise ValueError(f"Invalid value '{val}' for feature '{feat}'. Allowed values: {feat_meta['allowed_values']}")
-            elif feat_meta["type"] in ["int", "float"]:
+            if pd.isna(value):
+                raise ValueError(
+                    f"Feature '{feature}' cannot be empty."
+                )
+
+            if metadata["type"] == "string":
+                allowed_values = metadata.get("allowed_values")
+
+                if allowed_values and value not in allowed_values:
+                    raise ValueError(
+                        f"Invalid value '{value}' for '{feature}'. "
+                        f"Allowed values: {allowed_values}"
+                    )
+
+            elif metadata["type"] in ("int", "float"):
                 try:
-                    num_val = float(val)
-                    if np.isnan(num_val) or np.isinf(num_val):
-                        raise ValueError(f"Feature '{feat}' must be a finite numerical value. Received: {val}")
-                    if "range" in feat_meta:
-                        min_v, max_v = feat_meta["range"]
-                        if num_val < min_v or num_val > max_v:
-                            raise ValueError(f"Feature '{feat}' value {num_val} is outside valid physiological range [{min_v}, {max_v}].")
-                except Exception as e:
-                    raise ValueError(f"Feature '{feat}' validation error: {str(e)}")
+                    numeric_value = float(value)
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(
+                        f"Feature '{feature}' must be numeric. "
+                        f"Received: {value}"
+                    ) from exc
+
+                if not np.isfinite(numeric_value):
+                    raise ValueError(
+                        f"Feature '{feature}' must be finite."
+                    )
+
+                if metadata["type"] == "int" and not numeric_value.is_integer():
+                    raise ValueError(
+                        f"Feature '{feature}' must be an integer."
+                    )
+
+                if "range" in metadata:
+                    min_value, max_value = metadata["range"]
+
+                    if not min_value <= numeric_value <= max_value:
+                        raise ValueError(
+                            f"Feature '{feature}' value {numeric_value} "
+                            f"is outside the configured range "
+                            f"[{min_value}, {max_value}]."
+                        )
+
+                df_ordered[feature] = numeric_value
 
         return df_ordered
 
-    def predict_risk(self, patient_data):
+    @staticmethod
+    def _positive_class_probability(model, transformed_input):
         """
-        Executes production prediction pipeline:
-        1. Validate schema & enforce feature ordering.
-        2. Transform raw features using loaded preprocessor artifact.
-        3. Predict calibrated risk probability.
+        Return the probability associated with class label 1.
+        Do not assume class 1 is always the second column.
         """
-        df_valid = self.validate_input(patient_data)
+        probabilities = np.asarray(
+            model.predict_proba(transformed_input),
+            dtype=float,
+        )
 
-        # Transform raw features using loaded preprocessor (No manual code duplication)
-        X_trans = self.preprocessor.transform(df_valid)
+        if probabilities.ndim != 2 or probabilities.shape[0] != 1:
+            raise ValueError(
+                "Expected predict_proba to return one row of probabilities; "
+                f"received shape {probabilities.shape}."
+            )
 
-        # Predict probability using loaded calibrated model
-        probs = self.calibrated_model.predict_proba(X_trans)[0]
-        risk_prob = float(probs[1])
+        classes = getattr(model, "classes_", None)
 
-        # Classification at configured threshold (0.30)
-        is_high_risk = bool(risk_prob >= self.threshold)
-        
-        if risk_prob < 0.30:
-            category = "Low Risk"
-        elif risk_prob < 0.60:
-            category = "Moderate Risk"
+        # Some calibrated wrappers expose classes on their base model.
+        if classes is None and hasattr(model, "base_model"):
+            classes = getattr(model.base_model, "classes_", None)
+
+        if classes is None:
+            # Binary classifiers commonly return [class 0, class 1].
+            # This fallback is only safe if the wrapper preserves that order.
+            if probabilities.shape[1] != 2:
+                raise ValueError(
+                    "Cannot determine positive class probability: "
+                    "model does not expose classes_ and is not binary."
+                )
+            positive_index = 1
         else:
-            category = "High Risk"
+            classes = list(classes)
 
-        # 4. Generate SHAP Explanation for individual patient prediction
-        top_contributing_features = []
+            if 1 not in classes:
+                raise ValueError(
+                    f"Positive class 1 not found in model classes: {classes}"
+                )
+
+            positive_index = classes.index(1)
+
+        if positive_index >= probabilities.shape[1]:
+            raise ValueError(
+                "Model class index does not match probability output."
+            )
+
+        probability = float(probabilities[0, positive_index])
+
+        if not np.isfinite(probability) or not 0.0 <= probability <= 1.0:
+            raise ValueError(
+                f"Invalid predicted probability: {probability}"
+            )
+
+        return probability, probabilities
+
+    @staticmethod
+    def _get_base_model_probability(model, transformed_input):
+        """
+        Diagnostic only: get the uncalibrated base-model probability for class 1.
+        This must NOT replace the calibrated probability used by the application.
+        """
+        base_model = getattr(model, "base_model", None)
+        if base_model is None:
+            return None
+
+        try:
+            probabilities = np.asarray(
+                base_model.predict_proba(transformed_input), dtype=float
+            )
+            classes = getattr(base_model, "classes_", None)
+
+            if probabilities.ndim != 2 or probabilities.shape[0] != 1:
+                return None
+
+            if classes is not None:
+                classes = list(classes)
+                if 1 not in classes:
+                    return None
+                positive_index = classes.index(1)
+            else:
+                if probabilities.shape[1] != 2:
+                    return None
+                positive_index = 1
+
+            if positive_index >= probabilities.shape[1]:
+                return None
+
+            value = float(probabilities[0, positive_index])
+            if not np.isfinite(value) or not 0.0 <= value <= 1.0:
+                return None
+            return value
+        except Exception as exc:
+            print(f"[DEBUG] Could not obtain base-model probability: {exc}")
+            return None
+
+    def _get_shap_values(self, transformed_input):
+        """
+        Calculate SHAP values for one patient.
+        Returns None if a compatible explainer cannot be created.
+        """
         try:
             import shap
-            if not hasattr(self, "_explainer") or self._explainer is None:
-                self._explainer = shap.TreeExplainer(self.calibrated_model.base_model)
-            
-            shap_vals = self._explainer.shap_values(X_trans)
-            if isinstance(shap_vals, list):
-                inst_shap = shap_vals[1][0] if len(shap_vals) > 1 else shap_vals[0][0]
-            elif isinstance(shap_vals, np.ndarray) and len(shap_vals.shape) == 3:
-                inst_shap = shap_vals[0, :, 1]
-            elif isinstance(shap_vals, np.ndarray) and len(shap_vals.shape) == 2:
-                inst_shap = shap_vals[0]
+
+            if self._explainer is None:
+                base_model = getattr(
+                    self.calibrated_model,
+                    "base_model",
+                    self.calibrated_model,
+                )
+                self._explainer = shap.TreeExplainer(base_model)
+
+            explanation = self._explainer.shap_values(transformed_input)
+
+            if isinstance(explanation, list):
+                if len(explanation) > 1:
+                    values = np.asarray(explanation[1])
+                elif len(explanation) == 1:
+                    values = np.asarray(explanation[0])
+                else:
+                    return None
+
             else:
-                inst_shap = shap_vals
+                values = np.asarray(explanation)
 
-            transformed_features = self.manifest["transformed_feature_order"]
-            total_abs_shap = float(np.sum(np.abs(inst_shap)))
+                # Common SHAP format: (samples, features, classes).
+                if values.ndim == 3:
+                    if values.shape[2] > 1:
+                        values = values[:, :, 1]
+                    else:
+                        values = values[:, :, 0]
 
-            all_contributions = []
-            for i, feat_name in enumerate(transformed_features):
-                s_val = float(inst_shap[i])
-                val_raw = X_trans[0, i] if isinstance(X_trans, np.ndarray) else X_trans.iloc[0, i]
-                rel_pct = (abs(s_val) / total_abs_shap * 100) if total_abs_shap > 0 else 0.0
+            # Expected shape: (1, number_of_features).
+            if values.ndim == 2:
+                if values.shape[0] != 1:
+                    return None
+                values = values[0]
 
-                all_contributions.append({
-                    "feature": feat_name,
-                    "actual_value": round(float(val_raw), 4),
-                    "shap_contribution": round(s_val, 4),
-                    "direction": "increased risk contribution" if s_val > 0 else "decreased risk contribution",
-                    "relative_contribution_pct": round(rel_pct, 2)
-                })
+            if values.ndim != 1:
+                print(
+                    "[SHAP Warning] Unexpected SHAP shape:",
+                    values.shape,
+                )
+                return None
 
-            all_contributions.sort(key=lambda x: abs(x["shap_contribution"]), reverse=True)
-            top_contributing_features = all_contributions[:5]
-        except Exception as e:
-            print(f"[SHAP Warning] Live instance SHAP calculation fallback to manifest global rankings: {e}")
-            global_rankings = self.manifest.get("shap_metadata", {}).get("global_rankings", [])
-            for r in global_rankings[:5]:
-                top_contributing_features.append({
-                    "feature": r["feature"],
-                    "shap_contribution": r["mean_abs_shap"],
-                    "direction": "increased risk contribution",
-                    "relative_contribution_pct": 0.0
-                })
+            if not np.all(np.isfinite(values)):
+                print("[SHAP Warning] Non-finite SHAP values.")
+                return None
+
+            return values.astype(float)
+
+        except Exception as exc:
+            print(f"[SHAP Warning] Could not calculate SHAP values: {exc}")
+            return None
+
+    def _build_contributions(
+        self,
+        df_valid,
+        transformed_input,
+        shap_values,
+    ):
+        """
+        Build explanations using original values for matching raw features.
+        Transformed/one-hot features retain their transformed values.
+        """
+        transformed_features = self.manifest.get(
+            "transformed_feature_order", []
+        )
+
+        if len(transformed_features) != len(shap_values):
+            print(
+                "[SHAP Warning] Feature count mismatch: "
+                f"{len(transformed_features)} names vs "
+                f"{len(shap_values)} SHAP values."
+            )
+            return []
+
+        if isinstance(transformed_input, pd.DataFrame):
+            transformed_values = transformed_input.iloc[0].to_numpy()
+        else:
+            transformed_values = np.asarray(transformed_input)[0]
+
+        total_abs_shap = float(np.sum(np.abs(shap_values)))
+        contributions = []
+
+        for index, feature_name in enumerate(transformed_features):
+            shap_value = float(shap_values[index])
+
+            # Numerical or categorical feature retained without transformation.
+            if feature_name in df_valid.columns:
+                actual_value = df_valid.iloc[0][feature_name]
+
+                if hasattr(actual_value, "item"):
+                    actual_value = actual_value.item()
+
+            else:
+                # Try to map one-hot columns back to a raw categorical field.
+                matching_feature = next(
+                    (
+                        raw_feature
+                        for raw_feature in self.raw_feature_order
+                        if feature_name.startswith(raw_feature + "_")
+                    ),
+                    None,
+                )
+
+                if matching_feature is not None:
+                    category = feature_name[
+                        len(matching_feature) + 1:
+                    ]
+                    patient_category = str(
+                        df_valid.iloc[0][matching_feature]
+                    )
+                    actual_value = int(patient_category == category)
+
+                else:
+                    # Scaled/encoded features cannot always be mapped
+                    # to raw units by name alone.
+                    actual_value = transformed_values[index]
+
+                    if hasattr(actual_value, "item"):
+                        actual_value = actual_value.item()
+
+                    if isinstance(actual_value, (int, float, np.number)):
+                        actual_value = float(actual_value)
+
+            relative_percentage = (
+                abs(shap_value) / total_abs_shap * 100.0
+                if total_abs_shap > 0
+                else 0.0
+            )
+
+            if shap_value > 0:
+                direction = "increased risk contribution"
+            elif shap_value < 0:
+                direction = "decreased risk contribution"
+            else:
+                direction = "no contribution"
+
+            contributions.append({
+                "feature": feature_name,
+                "actual_value": actual_value,
+                "shap_contribution": round(shap_value, 4),
+                "direction": direction,
+                "relative_contribution_pct": round(
+                    relative_percentage, 2
+                ),
+            })
+
+        contributions.sort(
+            key=lambda item: abs(item["shap_contribution"]),
+            reverse=True,
+        )
+
+        return contributions[:5]
+
+    def predict_risk(self, patient_data):
+        """
+        Validate one patient, transform inputs, calculate calibrated
+        probability, classify using the configured threshold, and explain.
+        """
+        df_valid = self.validate_input(patient_data)
+        transformed_input = self.preprocessor.transform(df_valid)
+
+        risk_probability, probability_array = (
+            self._positive_class_probability(
+                self.calibrated_model,
+                transformed_input,
+            )
+        )
+
+        # Diagnostics: compare uncalibrated and calibrated probabilities.
+        # The application must continue to use the calibrated probability.
+        base_probability = self._get_base_model_probability(
+            self.calibrated_model, transformed_input
+        )
+        print("\\n========== RISK DEBUG ==========")
+        print("[DEBUG] Calibrated class probabilities:", probability_array)
+        print("[DEBUG] Calibrated positive-class probability:", repr(risk_probability))
+        print("[DEBUG] Calibrated risk percentage:", risk_probability * 100.0)
+        print("[DEBUG] Base-model (uncalibrated) probability:", repr(base_probability))
+        print("[DEBUG] Decision threshold:", self.threshold)
+        print("================================\\n")
+
+        is_high_risk = risk_probability >= self.threshold
+
+        if risk_probability < 0.30:
+            risk_category = "Low Risk"
+        elif risk_probability < 0.60:
+            risk_category = "Moderate Risk"
+        else:
+            risk_category = "High Risk"
+
+        top_contributing_features = []
+        shap_values = self._get_shap_values(transformed_input)
+
+        if shap_values is not None:
+            top_contributing_features = self._build_contributions(
+                df_valid,
+                transformed_input,
+                shap_values,
+            )
+
+        if not top_contributing_features:
+            global_rankings = (
+                self.manifest.get("shap_metadata", {})
+                .get("global_rankings", [])
+            )
+
+            # Global rankings are not patient-specific SHAP explanations.
+            # Do not label them as individual contributions.
+            if global_rankings:
+                print(
+                    "[SHAP Warning] Returning no individual explanation; "
+                    "global rankings are available in the manifest."
+                )
 
         return {
             "prediction": 1 if is_high_risk else 0,
-            "probability": round(risk_prob, 4),
-            "risk_category": category,
+            "probability": risk_probability,
+            "risk_category": risk_category,
             "threshold": self.threshold,
-            "model_version": self.manifest["model_version"],
+            "model_version": self.manifest.get(
+                "model_version", "unknown"
+            ),
             "top_contributing_features": top_contributing_features,
-            "disclaimer": self.manifest["clinical_disclaimer"]
+            "disclaimer": self.manifest.get(
+                "clinical_disclaimer", ""
+            ),
         }
 
-# Global singleton instance for fast backend API import
+
+# Global singleton instance for fast backend API import.
 _engine = None
+
 
 def get_production_engine():
     global _engine
+
     if _engine is None:
         _engine = ProductionInferenceEngine()
+
     return _engine
+
 
 def predict_patient_risk(patient_dict):
     engine = get_production_engine()
     return engine.predict_risk(patient_dict)
 
+
 if __name__ == "__main__":
     print("Testing Production Inference Engine...")
+
     test_patient = {
         "gender": "Female",
         "age": 55.0,
@@ -177,9 +517,10 @@ if __name__ == "__main__":
         "smoking_history": "former",
         "bmi": 32.5,
         "HbA1c_level": 6.8,
-        "blood_glucose_level": 160
+        "blood_glucose_level": 160,
     }
-    
+
     result = predict_patient_risk(test_patient)
+
     print("Prediction Result:")
-    print(json.dumps(result, indent=2))
+    print(json.dumps(result, indent=2, default=str))

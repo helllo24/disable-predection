@@ -34,9 +34,21 @@ class DiabetesClinicalFeaturesRequest(BaseModel):
     @field_validator("smoking_history")
     @classmethod
     def validate_smoking(cls, v: str) -> str:
-        if not isinstance(v, str) or v.strip() not in ALLOWED_SMOKING:
+        if not isinstance(v, str):
+            raise ValueError("smoking_history must be a string")
+        # Normalize "no info" variants to model's expected value
+        normalized = v.strip()
+        normalized_lower = normalized.lower()
+        mapping = {
+            "no info": "No Info",
+            "no information": "No Info",
+            "unknown": "No Info",
+        }
+        if normalized_lower in mapping:
+            normalized = mapping[normalized_lower]
+        if normalized not in ALLOWED_SMOKING:
             raise ValueError(f"Invalid smoking history '{v}'. Allowed categories: {sorted(list(ALLOWED_SMOKING))}")
-        return v.strip()
+        return normalized
 
 class FeatureContributionItem(BaseModel):
     feature: str
@@ -93,6 +105,22 @@ class DiabetesPredictionResponse(BaseModel):
     bmi: Optional[float] = None
     diabetes_pedigree_function: Optional[float] = None
     age: Optional[int] = None
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class DiabetesProductionHistoryItem(BaseModel):
+    id: int
+    prediction: int
+    probability: float
+    risk_category: str
+    HbA1c_level: float
+    blood_glucose_level: float
+    bmi: float
+    age: float
+    prediction_date: Optional[datetime] = None
     created_at: Optional[datetime] = None
 
     class Config:

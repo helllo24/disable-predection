@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -54,14 +54,14 @@ def predict_and_save_complications(
 
     return record
 
-@router.get("/latest", response_model=DiabetesComplicationResponse)
+@router.get("/latest", response_model=Optional[DiabetesComplicationResponse])
 def get_latest_complications_prediction(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     Retrieves the authenticated patient's most recent complication risk assessment.
-    Strictly isolated to current_user.id.
+    Strictly isolated to current_user.id. Returns null (200) when no records exist.
     """
     record = (
         db.query(DiabetesComplicationPrediction)
@@ -69,12 +69,6 @@ def get_latest_complications_prediction(
         .order_by(DiabetesComplicationPrediction.created_at.desc())
         .first()
     )
-
-    if not record:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No diabetes complication predictions found for this patient."
-        )
 
     return record
 

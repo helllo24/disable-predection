@@ -1,16 +1,18 @@
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 from app.models.user import User
 from app.models.diabetes import DiabetesPrediction
+from app.models.diabetes_production import DiabetesProductionPrediction
 from app.schemas.diabetes import (
     DiabetesClinicalFeaturesRequest,
     DiabetesPredictResponse,
     DiabetesPredictionRequest,
-    DiabetesPredictionResponse
+    DiabetesPredictionResponse,
+    DiabetesProductionHistoryItem
 )
 from app.services.auth_service import get_current_user
 from app.services.diabetes_ml_service import diabetes_ml_service
@@ -31,7 +33,9 @@ dedicated_router = APIRouter(prefix="/api/diabetes", tags=["Production Diabetes 
     summary="Predict Diabetes Risk via Production Calibrated ML Pipeline"
 )
 def predict_diabetes_risk_production(
-    data: DiabetesClinicalFeaturesRequest
+    data: DiabetesClinicalFeaturesRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Production Diabetes Risk Prediction Endpoint:
@@ -40,18 +44,40 @@ def predict_diabetes_risk_production(
     3. Runs final trained model and Isotonic probability calibration (`calibrated_model.joblib`).
     4. Evaluates risk using configured screening decision threshold (`0.30`).
     5. Computes individual SHAP feature explanations.
+    6. Requires JWT authentication and saves result to DB.
     """
     logger.info("Received diabetes prediction request for patient age=%.1f, HbA1c=%.2f, glucose=%.1f",
                 data.age, data.HbA1c_level, data.blood_glucose_level)
 
     try:
         input_dict = data.model_dump()
-        
+
         # Execute production ML pipeline
         ml_result = diabetes_ml_service.predict(input_dict)
 
         logger.info("Successfully calculated risk probability=%.4f, category=%s",
                     ml_result["probability"], ml_result.get("risk_category", ml_result["risk"]))
+
+        # Save prediction to DB
+        db_record = DiabetesProductionPrediction(
+            user_id=current_user.id,
+            gender=data.gender,
+            age=data.age,
+            hypertension=data.hypertension,
+            heart_disease=data.heart_disease,
+            smoking_history=data.smoking_history,
+            bmi=data.bmi,
+            HbA1c_level=data.HbA1c_level,
+            blood_glucose_level=data.blood_glucose_level,
+            prediction=ml_result["prediction"],
+            probability=ml_result["probability"],
+            risk_category=ml_result.get("risk_category", ml_result.get("risk", "Unknown")),
+            threshold=ml_result.get("threshold", 0.30),
+            model_version=ml_result.get("model_version", "1.0.0"),
+        )
+        db.add(db_record)
+        db.commit()
+        db.refresh(db_record)
 
         return {
             "prediction": ml_result["prediction"],
@@ -130,37 +156,19 @@ def predict_diabetes_risk_legacy(
     }
 
 
-@router.get("/history", response_model=List[DiabetesPredictionResponse])
+@router.get("/history", response_model=List[DiabetesProductionHistoryItem])
 def get_diabetes_prediction_history(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Returns the authenticated patient's prediction history strictly isolated to their account."""
+    """Returns the authenticated patient's production prediction history strictly isolated to their account."""
     records = (
-        db.query(DiabetesPrediction)
-        .filter(DiabetesPrediction.user_id == current_user.id)
-        .order_by(DiabetesPrediction.id.desc())
+        db.query(DiabetesProductionPrediction)
+        .filter(DiabetesProductionPrediction.user_id == current_user.id)
+        .order_by(DiabetesProductionPrediction.id.desc())
         .all()
     )
-    return [
-        {
-            "id": r.id,
-            "prediction": r.prediction,
-            "risk": r.risk,
-            "probability": r.probability,
-            "model": r.model_name,
-            "pregnancies": r.pregnancies,
-            "glucose": r.glucose,
-            "blood_pressure": r.blood_pressure,
-            "skin_thickness": r.skin_thickness,
-            "insulin": r.insulin,
-            "bmi": r.bmi,
-            "diabetes_pedigree_function": r.diabetes_pedigree_function,
-            "age": r.age,
-            "created_at": r.created_at
-        }
-        for r in records
-    ]
+    return records
 
 
 @router.get("/latest", response_model=Optional[DiabetesPredictionResponse])

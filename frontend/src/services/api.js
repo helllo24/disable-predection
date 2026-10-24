@@ -1,66 +1,74 @@
+
 import axios from 'axios';
 
+// Backend API configuration
 const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ||
   import.meta.env.VITE_API_URL ||
-  'http://localhost:8000'
+  'http://127.0.0.1:8000'
 ).replace(/\/+$/, '');
+
+console.log('[API] Base URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
-    'X-DevTunnel-Skip-AntiPhishing-Page': 'true',
-    'ngrok-skip-browser-warning': 'true',
   },
 });
 
-// Interceptor to attach Authorization header if token exists
+// Attach JWT token to requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    console.log('[API Request]', config.method?.toUpperCase(), config.baseURL, config.url);
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Interceptor to process standardized error messages
+// Handle API errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     let customError = 'An unexpected error occurred. Please try again.';
-    
+
     if (error.response) {
-      if (error.response.status === 401) {
+      const status = error.response.status;
+      const detail = error.response.data?.detail;
+
+      if (status === 401) {
         customError = 'Session expired or invalid login. Please log in again.';
-      } else if (error.response.status === 403) {
+      } else if (status === 403) {
         customError = 'Access denied.';
-      } else if (error.response.data && error.response.data.detail) {
-        if (typeof error.response.data.detail === 'string') {
-          customError = error.response.data.detail;
-        } else if (Array.isArray(error.response.data.detail)) {
-          customError = error.response.data.detail.map(e => e.msg).join(', ');
-        }
+      } else if (typeof detail === 'string') {
+        customError = detail;
+      } else if (Array.isArray(detail)) {
+        customError = detail.map((item) => item.msg).join(', ');
       }
     } else if (error.request) {
-      customError = 'Unable to connect to the backend server. Please verify that the backend service is running and the API configuration is correct.';
+      customError =
+        'Unable to connect to the backend server. Check the API URL and ensure FastAPI is running.';
     }
-    
+
     return Promise.reject(new Error(customError));
   }
 );
 
-// Health check helper
+// Health check
 export const getHealthStatus = async () => {
   const response = await api.get('/api/health');
   return response.data;
 };
 
-// BMI Service Helpers
+// BMI
 export const calculateBMI = async (data) => {
   const response = await api.post('/api/bmi/calculate', data);
   return response.data;
@@ -76,7 +84,7 @@ export const getLatestBMI = async () => {
   return response.data;
 };
 
-// Diabetes ML Prediction Service Helpers
+// Diabetes prediction
 export const predictDiabetesProduction = async (data) => {
   const response = await api.post('/api/diabetes/predict', data);
   return response.data;
@@ -97,23 +105,30 @@ export const getLatestDiabetesPrediction = async () => {
   return response.data;
 };
 
-// Diabetes Complication ML Service Helpers
+// Diabetes complications
 export const predictDiabetesComplications = async (data) => {
-  const response = await api.post('/api/predictions/diabetes-complications', data);
+  const response = await api.post(
+    '/api/predictions/diabetes-complications',
+    data
+  );
   return response.data;
 };
 
 export const getLatestDiabetesComplicationPrediction = async () => {
-  const response = await api.get('/api/predictions/diabetes-complications/latest');
+  const response = await api.get(
+    '/api/predictions/diabetes-complications/latest'
+  );
   return response.data;
 };
 
 export const getDiabetesComplicationsHistory = async () => {
-  const response = await api.get('/api/predictions/diabetes-complications/history');
+  const response = await api.get(
+    '/api/predictions/diabetes-complications/history'
+  );
   return response.data;
 };
 
-// Disease ML Prediction Service Helpers
+// Disease prediction
 export const predictDisease = async (data) => {
   const response = await api.post('/api/predictions/disease', data);
   return response.data;
@@ -134,7 +149,7 @@ export const getSupportedSymptoms = async () => {
   return response.data;
 };
 
-// Health Risk Score Service Helpers
+// Health risk score
 export const calculateHealthRisk = async () => {
   const response = await api.post('/api/health-risk/calculate');
   return response.data;
@@ -150,7 +165,7 @@ export const getHealthRiskHistory = async () => {
   return response.data;
 };
 
-// Diet Recommendation Service Helpers
+// Diet recommendations
 export const createDietRecommendation = async (data) => {
   const response = await api.post('/api/recommendations/diet', data);
   return response.data;
@@ -166,7 +181,7 @@ export const getDietRecommendationHistory = async () => {
   return response.data;
 };
 
-// Exercise Recommendation Service Helpers
+// Exercise recommendations
 export const createExerciseRecommendation = async (data) => {
   const response = await api.post('/api/recommendations/exercise', data);
   return response.data;
@@ -182,7 +197,7 @@ export const getExerciseRecommendationHistory = async () => {
   return response.data;
 };
 
-// Medicine Reminder Service Helpers
+// Medicine reminders
 export const createMedicineReminder = async (data) => {
   const response = await api.post('/api/medicines', data);
   return response.data;
@@ -208,9 +223,12 @@ export const deleteMedicineReminder = async (id) => {
   return response.data;
 };
 
-// Doctor & Appointment Service Helpers
+// Doctors and appointments
 export const getDoctors = async (specialization = '') => {
-  const url = specialization ? `/api/doctors?specialization=${encodeURIComponent(specialization)}` : '/api/doctors';
+  const url = specialization
+    ? `/api/doctors?specialization=${encodeURIComponent(specialization)}`
+    : '/api/doctors';
+
   const response = await api.get(url);
   return response.data;
 };
@@ -245,7 +263,7 @@ export const cancelAppointment = async (id) => {
   return response.data;
 };
 
-// Health PDF Report Helper
+// Health PDF report
 export const downloadHealthReportPDF = async () => {
   const response = await api.get('/api/reports/health', {
     responseType: 'blob',
@@ -253,20 +271,25 @@ export const downloadHealthReportPDF = async () => {
   return response.data;
 };
 
-// Admin Service Helpers
+// Admin
 export const getAdminDashboardStats = async () => {
   const response = await api.get('/api/admin/dashboard');
   return response.data;
 };
 
 export const getAdminPatients = async (search = '') => {
-  const url = search ? `/api/admin/patients?search=${encodeURIComponent(search)}` : '/api/admin/patients';
+  const url = search
+    ? `/api/admin/patients?search=${encodeURIComponent(search)}`
+    : '/api/admin/patients';
+
   const response = await api.get(url);
   return response.data;
 };
 
 export const togglePatientStatus = async (patientId) => {
-  const response = await api.put(`/api/admin/patients/${patientId}/toggle-status`);
+  const response = await api.put(
+    `/api/admin/patients/${patientId}/toggle-status`
+  );
   return response.data;
 };
 
@@ -280,7 +303,7 @@ export const getAdminAppointments = async () => {
   return response.data;
 };
 
-// Research & External Validation Service Helpers
+// Research and external validation
 export const getResearchDashboardData = async () => {
   const response = await api.get('/api/v1/research/dashboard');
   return response.data;

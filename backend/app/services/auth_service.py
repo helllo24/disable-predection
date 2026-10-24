@@ -2,7 +2,7 @@ import os
 from typing import Optional, Union
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer,HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
@@ -17,7 +17,7 @@ from app.utils.security import (
     decode_access_token
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+security = HTTPBearer()
 
 def register_patient(arg1, arg2) -> User:
     """Supports both register_patient(db, user_data) and register_patient(user_data, db)."""
@@ -83,15 +83,23 @@ def authenticate_patient(arg1, arg2, arg3=None) -> User:
         )
     return user
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
-    """FastAPI Dependency: Decodes JWT token and retrieves authenticated User."""
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+) -> User:
+    """Decode JWT and retrieve the authenticated user."""
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate authentication token",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
+    # HTTPBearer gives us an object; extract the actual JWT string.
+    token = credentials.credentials
+
     payload = decode_access_token(token)
+
     if not payload:
         raise credentials_exception
 
@@ -101,18 +109,22 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 
     try:
         user_id = int(user_id_raw)
-    except ValueError:
+    except (ValueError, TypeError):
         raise credentials_exception
 
     user = db.query(User).filter(User.id == user_id).first()
+
     if user is None:
         raise credentials_exception
+
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account deactivated",
         )
+
     return user
+
 
 def get_current_admin_user(current_user: User = Depends(get_current_user)) -> User:
     """FastAPI Dependency: Enforces ADMIN role-based access control."""

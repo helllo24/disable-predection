@@ -35,6 +35,7 @@ class User(Base):
     medicine_reminders = relationship("MedicineReminder", back_populates="user", cascade="all, delete-orphan")
     appointments = relationship("Appointment", back_populates="user", cascade="all, delete-orphan")
     diabetes_complication_predictions = relationship("DiabetesComplicationPrediction", back_populates="user", cascade="all, delete-orphan")
+    diabetes_production_predictions = relationship("DiabetesProductionPrediction", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<User(id={self.id}, email='{self.email}', role='{self.role}', active={self.is_active})>"

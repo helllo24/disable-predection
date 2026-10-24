@@ -23,6 +23,7 @@ from app.routes import (
     research_router
 )
 import app.models  # noqa: F401
+import app.models.diabetes_production  # noqa: F401
 
 load_dotenv()
 

@@ -1,0 +1,16 @@
+{
+    "selected_model": "Logistic Regression",
+    "selection_metric": "mean ROC-AUC from training-only CV",
+    "test_samples": 154,
+    "test_accuracy": 0.7142857142857143,
+    "test_precision": 0.6086956521739131,
+    "test_recall": 0.5185185185185185,
+    "test_f1": 0.56,
+    "test_roc_auc": 0.8229629629629629,
+    "test_brier_score": 0.16860025158076278,
+    "TN": 82,
+    "FP": 18,
+    "FN": 26,
+    "TP": 28,
+    "classification_threshold": 0.5
+}

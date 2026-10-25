@@ -1,0 +1,2 @@
+selected_threshold,threshold_selection,test_samples,accuracy,precision,recall,f1,roc_auc,specificity,TN,FP,FN,TP
+0.35,maximum F1 on training out-of-fold predictions,154,0.7532467532467533,0.6290322580645161,0.7222222222222222,0.6724137931034483,0.8229629629629629,0.77,77,23,15,39

@@ -56,6 +56,8 @@ origins = [
     "http://127.0.0.1:5175",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8080",
+    
+    "https://disable-predection.vercel.app",
 ]
 
 app.add_middleware(
